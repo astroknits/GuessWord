@@ -2,41 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WordGrid : MonoBehaviour
+public class GuessWord : MonoBehaviour
 {
-    internal class LetterCell
-    {
-        internal Vector3 Centre;
-        internal char Value;
-        internal GameObject Cube;
-
-        internal LetterCell(Vector3 centre, float cellSize, GameObject prefab)
-        {
-            Centre = centre;
-            Cube = Instantiate(prefab, centre, Quaternion.identity);
-            Cube.transform.localScale *= cellSize;
-        }
-
-        internal void SetValue(char letter)
-        {
-            Value = letter;
-            var target = Cube.transform;
-            target.transform.position += new Vector3(0, 0, 0.5f);
-        }
-    }
-
-    internal class Word()
-    {
-        internal LetterCell[] Value;
-        internal LetterCell[] Solution;
-
-        internal Word(LetterCell[] value, LetterCell[] solution)
-        {
-            Value = value;
-            Solution = solution;
-        }
-    }
-
     [Header("Game Objects")]
     [SerializeField]
     internal GameObject m_LetterBox;
@@ -60,55 +27,56 @@ public class WordGrid : MonoBehaviour
     [Range(0.0f, 1.5f)]
     internal float m_CellPadding = 0; // padding between grid cells
 
-    internal LetterCell[,] LetterGrid;
+    internal Word[] WordGrid;
 
     // Start is called before the first frame update
     void Start()
     {
-        LetterGrid = new LetterCell[m_WordSize, m_NumTries];
+        PrintGridInfo();
+        WordGrid = GetWordGrid();
+        WordGrid[0].GuessWord("turn");
+        WordGrid[0].GuessWord("test");
+    }
 
-        Vector3 gridPosition = m_GameGrid.transform.position;
-        Vector3 gridScale = m_GameGrid.transform.localScale;
+    void PrintGridInfo()
+    {
+        Debug.Log($"Game: {m_WordSize} word length x {m_NumTries} guesses");
+    }
 
-        Vector3 upperLeftCorner = new Vector3(
+    internal Word[] GetWordGrid()
+    {
+        Word[] wordGrid = new Word[m_NumTries];
+
+        float cellSize = GetCellSize(m_GameGrid.transform.localScale);
+        Vector3 upperLeftCorner = GetUpperLeftCorner(m_GameGrid.transform.position, m_GameGrid.transform.localScale);
+
+        for (int j = 0; j < m_NumTries; j++)
+        {
+            float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + j * (m_CellPadding + cellSize));
+            wordGrid[j] = new Word("test");
+            for (int i = 0; i<m_WordSize; i++)
+            {
+                float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
+                Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - 1.0f);
+                wordGrid[j].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
+            }
+        }
+
+        return wordGrid;
+    }
+
+    internal Vector3 GetUpperLeftCorner(Vector3 gridPosition, Vector3 gridScale)
+    {
+        return new Vector3(
             gridPosition.x - gridScale.x / 2.0f,
             gridPosition.y + gridScale.y / 2.0f,
             gridPosition.z);
+    }
 
+    internal float GetCellSize(Vector3 gridScale)
+    {
         float cellWidth = (gridScale.x - 2.0f * m_GridMargin - (m_WordSize - 1.0f) * m_CellPadding) / m_WordSize;
         float cellHeight = (gridScale.y - 2.0f * m_GridMargin - (m_NumTries - 1.0f) * m_CellPadding) / m_NumTries;
-        float cellSize = Mathf.Min(cellWidth, cellHeight);
-
-        PrintGridInfo(gridPosition, gridScale, cellWidth, cellHeight, cellSize);
-
-        for (int i = 0; i<m_WordSize; i++)
-        {
-            float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
-            for (int j = 0; j < m_NumTries; j++)
-            {
-                float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + j * (m_CellPadding + cellSize));
-                Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - 1.0f);
-                LetterGrid[i, j] = new LetterCell(cellCentre, cellSize, m_LetterBox);
-            }
-        }
-    }
-
-    void PrintGridInfo(Vector3 gridPosition, Vector3 gridScale, float cellWidth, float cellHeight, float cellSize)
-    {
-        Debug.Log($"Game: Word length {m_WordSize}, {m_NumTries} guesses");
-        Debug.Log($"Grid physical dimensions: {gridScale.x}x{gridScale.y}");
-        Debug.Log($"Grid z-distance: {gridPosition.z}");
-        Debug.Log($"Grid Centre: {gridPosition.x}, {gridPosition.y}");
-        Debug.Log($"Cell width {cellWidth} height {cellHeight} size {cellSize}");
-    }
-
-    internal float GetCellWidth()
-    {
-        return 0.0f;
-    }
-
-    internal float GetCellPosition()
-    {
-        return 0.0f;
+        return Mathf.Min(cellWidth, cellHeight);
     }
 }
