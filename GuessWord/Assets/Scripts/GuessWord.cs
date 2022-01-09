@@ -10,8 +10,10 @@ public class GuessWord : MonoBehaviour
     [SerializeField]
     public GameObject m_GameGrid;
 
+    /*
     [SerializeField]
     internal Canvas CanvasObject; // Assign in inspector
+    */
 
     [Header("Game Dimensions")]
     [SerializeField]
@@ -30,17 +32,18 @@ public class GuessWord : MonoBehaviour
     [Range(0.0f, 1.5f)]
     internal float m_CellPadding = 0; // padding between grid cells
 
-    internal Word[] WordGrid;
+    internal WordGrid WordGridObject;
 
 
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
-        WordGrid = GetWordGrid();
-        WordGrid[0].GuessWord("TURN", 0);
-        WordGrid[1].GuessWord("TEST", 1);
-        StartCoroutine(Waiter(CanvasObject));
+        WordGridObject = new WordGrid(m_LetterBox, m_GameGrid, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
+        WordGridObject.GuessWord(0, "TURN");
+        WordGridObject.GuessWord(1, "TEST");
+        // StartCoroutine(Waiter(CanvasObject));
+        // CanvasObject.enabled = false;
     }
 
     IEnumerator Waiter(Canvas CanvasObject)
@@ -59,51 +62,5 @@ public class GuessWord : MonoBehaviour
     void PrintGridInfo()
     {
         Debug.Log($"Game: {m_WordSize} word length x {m_NumTries} guesses");
-    }
-
-    internal Word[] GetWordGrid()
-    {
-        string solution = GetSolution();
-        float zOffset = 0.8f;
-        GameObject letterBoxParent = new GameObject("LetterBoxParent");
-
-        Word[] wordGrid = new Word[m_NumTries];
-
-        float cellSize = GetCellSize(m_GameGrid.transform.localScale);
-        Vector3 upperLeftCorner = GetUpperLeftCorner(m_GameGrid.transform.position, m_GameGrid.transform.localScale);
-
-        for (int j = 0; j < m_NumTries; j++)
-        {
-            float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + j * (m_CellPadding + cellSize));
-            wordGrid[j] = new Word(solution, letterBoxParent);
-            for (int i = 0; i<m_WordSize; i++)
-            {
-                float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
-                Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - zOffset);
-                wordGrid[j].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
-            }
-        }
-
-        return wordGrid;
-    }
-
-    internal string GetSolution()
-    {
-        return "TEST";
-    }
-
-    internal Vector3 GetUpperLeftCorner(Vector3 gridPosition, Vector3 gridScale)
-    {
-        return new Vector3(
-            gridPosition.x - gridScale.x / 2.0f,
-            gridPosition.y + gridScale.y / 2.0f,
-            gridPosition.z);
-    }
-
-    internal float GetCellSize(Vector3 gridScale)
-    {
-        float cellWidth = (gridScale.x - 2.0f * m_GridMargin - (m_WordSize - 1.0f) * m_CellPadding) / m_WordSize;
-        float cellHeight = (gridScale.y - 2.0f * m_GridMargin - (m_NumTries - 1.0f) * m_CellPadding) / m_NumTries;
-        return Mathf.Min(cellWidth, cellHeight);
     }
 }
