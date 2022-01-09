@@ -25,6 +25,17 @@ public class WordGrid : MonoBehaviour
         }
     }
 
+    internal class Word()
+    {
+        internal LetterCell[] Value;
+        internal LetterCell[] Solution;
+
+        internal Word(LetterCell[] value, LetterCell[] solution)
+        {
+            Value = value;
+            Solution = solution;
+        }
+    }
 
     [Header("Game Objects")]
     [SerializeField]
