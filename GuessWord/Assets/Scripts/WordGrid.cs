@@ -1,29 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 internal class WordGrid : Object
 {
     internal GameObject m_LetterBox;
-    public GameObject m_GameGrid;
+    internal GameObject m_GameGrid;
+    internal Canvas m_CanvasObject;
     internal int m_WordSize; // number of letters per word
     internal int m_NumTries; // Number of guesses allowed per round
     // Grid settings
     internal float m_GridMargin = 0; // margin around grid, equal padding along top/bottom/sides
     internal float m_CellPadding = 0; // padding between grid cells
 
-    internal Word[] Grid;
+    internal Word[] m_Grid;
 
-    internal WordGrid(GameObject letterBox, GameObject gameGrid,
+    internal int m_GuessCount;
+
+    internal WordGrid(GameObject letterBox, GameObject gameGrid, Canvas canvasObject,
         int wordSize, int numTries, float gridMargin, float cellPadding)
     {
         m_LetterBox = letterBox;
         m_GameGrid = gameGrid;
+        m_CanvasObject = canvasObject;
         m_WordSize = wordSize;
         m_NumTries = numTries;
         m_GridMargin = gridMargin;
         m_CellPadding = cellPadding;
+        m_GuessCount = 0;
+
+        // Set up the grid object
         SetGrid();
+
+        // Get the enter button from the Canvas
+        // m_EnterGuessButton = GameObject.Find("EnterGuessName").GetComponent<UnityEngine.UI.Button>();
+        // m_EnterGuessButton.onClick.AddListener(MakeGuess);
+        // InputField _inputField = GameObject.Find("InputGuessTextField").GetComponent<InputField>();
+        // Debug.Log($"input field: {_inputField}");
+        // _inputField.onEndEdit.AddListener(delegate { MakeGuess(_inputField);});
+    }
+
+    internal void Run()
+    {
+        GuessWord("TURN");
+        GuessWord("TEST");
+        m_CanvasObject.enabled = true;
     }
 
     internal string GetSolution()
@@ -37,7 +59,7 @@ internal class WordGrid : Object
         float zOffset = 0.8f;
         GameObject letterBoxParent = new GameObject("LetterBoxParent");
 
-        Grid = new Word[m_NumTries];
+        m_Grid = new Word[m_NumTries];
 
         float cellSize = GetCellSize(m_GameGrid.transform.localScale);
         Vector3 upperLeftCorner = GetUpperLeftCorner(m_GameGrid.transform.position, m_GameGrid.transform.localScale);
@@ -45,16 +67,16 @@ internal class WordGrid : Object
         for (int guessNumber = 0; guessNumber < m_NumTries; guessNumber++)
         {
             float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + guessNumber * (m_CellPadding + cellSize));
-            Grid[guessNumber] = new Word(solution, letterBoxParent, guessNumber);
+            m_Grid[guessNumber] = new Word(solution, letterBoxParent, guessNumber);
             for (int i = 0; i<m_WordSize; i++)
             {
                 float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
                 Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - zOffset);
-                Grid[guessNumber].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
+                m_Grid[guessNumber].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
             }
         }
 
-        return Grid;
+        return m_Grid;
     }
 
     internal Vector3 GetUpperLeftCorner(Vector3 gridPosition, Vector3 gridScale)
@@ -72,8 +94,22 @@ internal class WordGrid : Object
         return Mathf.Min(cellWidth, cellHeight);
     }
 
-    internal bool GuessWord(int guessNumber, string word)
+    internal void MakeGuess(InputField input)
     {
-        return Grid[guessNumber].GuessWord(word);
+        if (input.text.Length > 0)
+        {
+            Debug.Log("Text has been entered");
+        }
+        else if (input.text.Length == 0)
+        {
+            Debug.Log("Main Input Empty");
+        }
+    }
+
+    internal bool GuessWord(string word)
+    {
+        bool match = m_Grid[m_GuessCount].GuessWord(word);
+        m_GuessCount += 1;
+        return match;
     }
 }
