@@ -40,7 +40,20 @@ public class GuessWord : MonoBehaviour
         WordGrid = GetWordGrid();
         WordGrid[0].GuessWord("TURN", 0);
         WordGrid[1].GuessWord("TEST", 1);
+        StartCoroutine(Waiter(CanvasObject));
+    }
+
+    IEnumerator Waiter(Canvas CanvasObject)
+    {
         CanvasObject.enabled = true;
+        //Wait for 10 seconds
+        Debug.Log("Waiting for 10 seconds");
+        yield return new WaitForSeconds(10);
+        Debug.Log("Done waiting");
+        CanvasObject.enabled = false;
+        Debug.Log("Waiting for 2 seconds");
+        yield return new WaitForSeconds(2);
+        Debug.Log("Done.");
     }
 
     void PrintGridInfo()
