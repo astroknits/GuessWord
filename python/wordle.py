@@ -138,7 +138,6 @@ class Grid(object):
         for i in range(len(self.tries)):
             print('######################')
             if self.make_guess(i):
-                print('make_guess is TRUE')
                 win = True
                 break
         self.print_grid()
