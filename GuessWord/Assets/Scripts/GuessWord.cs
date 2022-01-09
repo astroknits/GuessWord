@@ -10,6 +10,9 @@ public class GuessWord : MonoBehaviour
     [SerializeField]
     public GameObject m_GameGrid;
 
+    [SerializeField]
+    internal Canvas CanvasObject; // Assign in inspector
+
     [Header("Game Dimensions")]
     [SerializeField]
     [Range(4, 8)]
@@ -29,13 +32,15 @@ public class GuessWord : MonoBehaviour
 
     internal Word[] WordGrid;
 
+
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
         WordGrid = GetWordGrid();
-        WordGrid[0].GuessWord("TURN");
-        WordGrid[1].GuessWord("TEST");
+        WordGrid[0].GuessWord("TURN", 0);
+        WordGrid[1].GuessWord("TEST", 1);
+        CanvasObject.enabled = true;
     }
 
     void PrintGridInfo()
@@ -46,8 +51,10 @@ public class GuessWord : MonoBehaviour
     internal Word[] GetWordGrid()
     {
         string solution = GetSolution();
-        Word[] wordGrid = new Word[m_NumTries];
         float zOffset = 0.8f;
+        GameObject letterBoxParent = new GameObject("LetterBoxParent");
+
+        Word[] wordGrid = new Word[m_NumTries];
 
         float cellSize = GetCellSize(m_GameGrid.transform.localScale);
         Vector3 upperLeftCorner = GetUpperLeftCorner(m_GameGrid.transform.position, m_GameGrid.transform.localScale);
@@ -55,7 +62,7 @@ public class GuessWord : MonoBehaviour
         for (int j = 0; j < m_NumTries; j++)
         {
             float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + j * (m_CellPadding + cellSize));
-            wordGrid[j] = new Word(solution);
+            wordGrid[j] = new Word(solution, letterBoxParent);
             for (int i = 0; i<m_WordSize; i++)
             {
                 float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);

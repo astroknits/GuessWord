@@ -7,10 +7,12 @@ internal class Word
     internal LetterCell[] Value;
     internal string Solution;
     internal bool Match;
+    private GameObject LetterCellParent;
 
-    internal Word(string solution)
+    internal Word(string solution, GameObject letterCellParent)
     {
         Solution = solution;
+        LetterCellParent = letterCellParent;
         Value = GetEmptyWord(solution);
     }
 
@@ -19,18 +21,18 @@ internal class Word
         LetterCell[] word = new LetterCell[solution.Length];
         for (int i = 0; i < solution.Length; i++)
         {
-            word[i] = new LetterCell(solution[i]);
+            word[i] = new LetterCell(solution[i], LetterCellParent);
         }
 
         return word;
     }
 
-    internal bool GuessWord(string word)
+    internal bool GuessWord(string word, int j)
     {
         bool match = true;
         for (int i = 0; i < word.Length; i++)
         {
-            if (!Value[i].GuessLetter(word[i]))
+            if (!Value[i].GuessLetter(word[i], i, j))
             {
                 match = false;
             }

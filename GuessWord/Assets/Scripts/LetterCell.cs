@@ -9,10 +9,12 @@ internal class LetterCell: Object
     internal Vector3 Centre;
     internal float CellSize;
     internal GameObject Cube;
+    private GameObject LetterCellParent;
 
-    internal LetterCell(char solution)
+    internal LetterCell(char solution, GameObject letterCellParent)
     {
         Solution = solution;
+        LetterCellParent = letterCellParent;
     }
 
     internal void ConfigureCell(Vector3 centre, float cellSize, GameObject prefab)
@@ -21,25 +23,28 @@ internal class LetterCell: Object
         CellSize = cellSize;
         Cube = Instantiate(prefab, centre, Quaternion.identity);
         Cube.transform.localScale *= cellSize;
+        Cube.transform.parent = LetterCellParent.transform;
     }
 
-    internal void SetValue(char letter)
+    internal void SetValue(char letter, int i, int j)
     {
         Value = letter;
         var target = Cube.transform;
         target.transform.position -= new Vector3(0, 0, 0.2f);
-        RenderLetter();
+        RenderLetter(i, j);
     }
 
-    internal void RenderLetter()
+    internal void RenderLetter(int i, int j)
     {
+        // TODO: Revisit, make text location tuning less hacky
         int fontSize = 50;
-        GameObject text = new GameObject();
+        GameObject text = new GameObject($"Guess {j} Letter {i}: {Value.ToString()}");
+        text.transform.parent = LetterCellParent.transform;
         TextMesh t = text.AddComponent<TextMesh>();
         t.text = Value.ToString();
         t.color = Color.gray;
         t.fontSize = fontSize;
-        // fudge factor to get reasonable text size:
+        // fudge factor to get reasonable text size (need to scale by cell size)
         t.transform.localScale *= CellSize/8.125f;
         t.font.GetCharacterInfo(Value, out CharacterInfo info);
         /*
@@ -54,9 +59,9 @@ internal class LetterCell: Object
             .2f);
     }
 
-    internal bool GuessLetter(char letter)
+    internal bool GuessLetter(char letter, int i, int j)
     {
-        SetValue(letter);
+        SetValue(letter, i, j);
         return (Value == Solution);
     }
 }
