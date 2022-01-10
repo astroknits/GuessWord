@@ -19,6 +19,8 @@ public class GuessWord : MonoBehaviour
     [SerializeField]
     internal Canvas m_CanvasObject; // Assign in inspector
 
+    internal TMP_InputField m_InputField;
+
     [Header("Game Dimensions")]
     [SerializeField]
     [Range(4, 8)]
@@ -38,94 +40,74 @@ public class GuessWord : MonoBehaviour
 
     internal WordGrid WordGridObject;
 
+    internal bool m_Won;
 
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
+        SetUpInputField();
 
         WordGridObject = new WordGrid(m_LetterBox, m_GameGrid, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
         WordGridObject.Run();
-
-        TMP_InputField inputField = GameObject.Find("InputGuessTextField").GetComponent<TMP_InputField>();
-        // GameObject inputField = GetInputField();
-        // Debug.Log($"input field: {inputField}");
-        // TMP_InputField ipf = inputField.GetComponent<TMP_InputField>();
-        inputField.onEndEdit.AddListener(MakeGuess);
-
-        /*
-        GameObject inputFieldGO = new GameObject ();
-        inputFieldGO.name = "inputfield";
-        InputField inputField = inputFieldGO.AddComponent<InputField> ();
-        inputField.text = "Hello World!";
-        inputField.transform.position = new Vector3(-23.0f, -154.5f, 0.0f);
-
-        GameObject placeholderGO = new GameObject();
-        placeholderGO.transform.SetParent(inputFieldGO.transform);
-        Text myPlaceholderText = placeholderGO.AddComponent<Text>();
-        inputField.placeholder = myPlaceholderText;
-
-        Debug.Log($"input field: {inputField}");
-        */
-
-
-        /*
-        InputField nameInputField = null;
-        // string placeHolderText = nameInputField.placeholder.GetComponent<Text> ().text = "Guess a word ...";
-        InputField.SubmitEvent submitEvent = new InputField.SubmitEvent();
-        submitEvent.AddListener(MakeGuess);
-        nameInputField.onEndEdit = submitEvent;
-
-        Debug.Log($"input field: {nameInputField}");
-        */
-        // InputField _inputField = GameObject.Find("InputGuessTextField").GetComponent<InputField>();
-        // Debug.Log($"input field: {_inputField}");
-        // _inputField.onEndEdit.AddListener(MakeGuess);
     }
 
-    internal GameObject GetInputField()
+    void Update()
     {
-        int children = m_CanvasObject.transform.childCount;
-        for (int i = 0; i < children; ++i)
-        {
-            Debug.Log("For loop: " + m_CanvasObject.transform.GetChild(i));
-            GameObject go = m_CanvasObject.transform.GetChild(i).gameObject;
-            if (go.name == "InputGuessTextField")
-            {
-                Debug.Log($"Found it.  {go.name}");
-                return go;
-            }
-        }
 
-        return null;
     }
 
+    internal void SetUpInputField()
+    {
+        m_InputField = GameObject.Find("InputGuessTextField").GetComponent<TMP_InputField>();
+        m_InputField.enabld = true;
+        m_InputField.onEndEdit.AddListener(MakeGuess);
+    }
+
+    internal void DeactivateInputField()
+    {
+        m_InputField.onEndEdit.RemoveAllListeners();
+        m_InputField.enabled = false;
+    }
     internal void MakeGuess(string word)
     {
-        WordGridObject.GuessWord(word);
+        if (!IsValid(word))
+        {
+            Debug.Log($"Word {word} is not valid; please try again.");
+            return;
+        }
+
+        // submit the guess
+        m_Won = WordGridObject.GuessWord(word);
+
+        // clear the text field
+        m_InputField.text = "";
+
+        if (m_Won)
+        {
+            OnWin();
+        }
     }
 
-    void ToggleCanvas()
+    internal void OnWin()
     {
-        m_CanvasObject.enabled = !m_CanvasObject.enabled;
+        Debug.Log($"Congratulations!  You've guessed the solution, {WordGridObject.m_Solution}");
+        DeactivateInputField();
     }
 
-    void SetUpCanvas()
+    internal bool IsValid(string word)
     {
-        StartCoroutine(Waiter(m_CanvasObject));
+        if (word.Length != m_WordSize)
+        {
+            Debug.Log($"Word needs to be {m_WordSize} letters.  Please try again.");
+            return false;
+        }
+        return true;
     }
 
-    IEnumerator Waiter(Canvas CanvasObject)
+    void DisableCanvas()
     {
-        m_CanvasObject.enabled = true;
-        //Wait for 10 seconds
-        Debug.Log("Waiting for 10 seconds");
-        yield return new WaitForSeconds(10);
-        Debug.Log("Done waiting");
         m_CanvasObject.enabled = false;
-        Debug.Log("Waiting for 2 seconds");
-        yield return new WaitForSeconds(2);
-        Debug.Log("Done.");
     }
 
     void PrintGridInfo()

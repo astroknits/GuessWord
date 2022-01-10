@@ -18,6 +18,8 @@ internal class WordGrid : Object
 
     internal int m_GuessCount;
 
+    internal string m_Solution;
+
     internal WordGrid(GameObject letterBox, GameObject gameGrid, Canvas canvasObject,
         int wordSize, int numTries, float gridMargin, float cellPadding)
     {
@@ -29,22 +31,13 @@ internal class WordGrid : Object
         m_GridMargin = gridMargin;
         m_CellPadding = cellPadding;
         m_GuessCount = 0;
-
-        // Set up the grid object
-        SetGrid();
-
-        // Get the enter button from the Canvas
-        // m_EnterGuessButton = GameObject.Find("EnterGuessName").GetComponent<UnityEngine.UI.Button>();
-        // m_EnterGuessButton.onClick.AddListener(MakeGuess);
-        // InputField _inputField = GameObject.Find("InputGuessTextField").GetComponent<InputField>();
-        // Debug.Log($"input field: {_inputField}");
-        // _inputField.onEndEdit.AddListener(delegate { MakeGuess(_inputField);});
     }
 
     internal void Run()
     {
-        GuessWord("TURN");
-        GuessWord("TEST");
+        // Set up the grid object
+        SetGrid();
+        // Enable the canvas
         m_CanvasObject.enabled = true;
     }
 
@@ -55,7 +48,7 @@ internal class WordGrid : Object
 
     internal Word[] SetGrid()
     {
-        string solution = GetSolution();
+        m_Solution = GetSolution();
         float zOffset = 0.8f;
         GameObject letterBoxParent = new GameObject("LetterBoxParent");
 
@@ -67,7 +60,7 @@ internal class WordGrid : Object
         for (int guessNumber = 0; guessNumber < m_NumTries; guessNumber++)
         {
             float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + guessNumber * (m_CellPadding + cellSize));
-            m_Grid[guessNumber] = new Word(solution, letterBoxParent, guessNumber);
+            m_Grid[guessNumber] = new Word(m_Solution, letterBoxParent, guessNumber);
             for (int i = 0; i<m_WordSize; i++)
             {
                 float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
