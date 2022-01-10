@@ -15,15 +15,15 @@ internal class Word
         Solution = solution;
         LetterCellParent = letterCellParent;
         GuessNumber = guessNumber;
-        Value = GetEmptyWord(solution);
+        Value = GetEmptyWord();
     }
 
-    internal LetterCell[] GetEmptyWord(string solution)
+    internal LetterCell[] GetEmptyWord()
     {
-        LetterCell[] word = new LetterCell[solution.Length];
-        for (int i = 0; i < solution.Length; i++)
+        LetterCell[] word = new LetterCell[Solution.Length];
+        for (int i = 0; i < Solution.Length; i++)
         {
-            word[i] = new LetterCell(solution[i], LetterCellParent);
+            word[i] = new LetterCell(Solution[i], LetterCellParent);
         }
 
         return word;

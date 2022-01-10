@@ -19,6 +19,7 @@ internal class WordGrid : Object
     internal int m_GuessCount;
 
     internal string m_Solution;
+    internal float m_ZOffset = 0.8f;
 
     internal WordGrid(GameObject letterBox, GameObject gameGrid, Canvas canvasObject,
         int wordSize, int numTries, float gridMargin, float cellPadding)
@@ -49,7 +50,6 @@ internal class WordGrid : Object
     internal Word[] SetGrid()
     {
         m_Solution = GetSolution();
-        float zOffset = 0.8f;
         GameObject letterBoxParent = new GameObject("LetterBoxParent");
 
         m_Grid = new Word[m_NumTries];
@@ -64,7 +64,7 @@ internal class WordGrid : Object
             for (int i = 0; i<m_WordSize; i++)
             {
                 float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
-                Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - zOffset);
+                Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - m_ZOffset);
                 m_Grid[guessNumber].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
             }
         }

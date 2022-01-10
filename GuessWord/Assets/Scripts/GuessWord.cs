@@ -6,6 +6,8 @@ using TMPro;
 
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine.Accessibility;
 using UnityEngine.UI;
 
 public class GuessWord : MonoBehaviour
@@ -46,10 +48,7 @@ public class GuessWord : MonoBehaviour
     void Start()
     {
         PrintGridInfo();
-        SetUpInputField();
-
-        WordGridObject = new WordGrid(m_LetterBox, m_GameGrid, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
-        WordGridObject.Run();
+        StartNewGame();
     }
 
     void Update()
@@ -57,17 +56,24 @@ public class GuessWord : MonoBehaviour
 
     }
 
+    internal void StartNewGame()
+    {
+        SetUpInputField();
+        WordGridObject = new WordGrid(m_LetterBox, m_GameGrid, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
+        WordGridObject.Run();
+    }
+
     internal void SetUpInputField()
     {
         m_InputField = GameObject.Find("InputGuessTextField").GetComponent<TMP_InputField>();
-        m_InputField.enabld = true;
         m_InputField.onEndEdit.AddListener(MakeGuess);
+        m_InputField.gameObject.SetActive(true);
     }
 
     internal void DeactivateInputField()
     {
         m_InputField.onEndEdit.RemoveAllListeners();
-        m_InputField.enabled = false;
+        m_InputField.gameObject.SetActive(false);
     }
     internal void MakeGuess(string word)
     {
@@ -86,13 +92,38 @@ public class GuessWord : MonoBehaviour
         if (m_Won)
         {
             OnWin();
+            return;
         }
+
+        if (WordGridObject.m_GuessCount >= m_NumTries)
+        {
+            OnLose();
+            return;
+        }
+    }
+
+    internal bool Message(string message, float width=3.0f, float height=2.5f, float yOffset=2.5f, float zOffset=-4.0f)
+    {
+        // GUI.Box(new Rect(0,0,Screen.width/2,Screen.height/2),message);
+        GameObject messageBox = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        messageBox.transform.position = m_GameGrid.transform.position + new Vector3(0, yOffset, zOffset);
+        messageBox.transform.localScale = new Vector3(width, height, 1.0f);
+        // GameObject.Destroy(messageBox);
+        return true;
     }
 
     internal void OnWin()
     {
-        Debug.Log($"Congratulations!  You've guessed the solution, {WordGridObject.m_Solution}");
+        string message = $"Congratulations!  You've guessed the solution, {WordGridObject.m_Solution}";
         DeactivateInputField();
+        Message(message);
+    }
+
+    internal void OnLose()
+    {
+        string message = $"Game over!  The solution was {WordGridObject.m_Solution}";
+        DeactivateInputField();
+        Message(message);
     }
 
     internal bool IsValid(string word)

@@ -10,7 +10,7 @@ internal class LetterCell: Object
     internal float CellSize;
     internal GameObject Cube;
     internal GameObject LetterCellParent;
-    internal float zOffset = 0.2f;
+    // internal float zOffset = 0.2f;
 
     internal LetterCell(char solution, GameObject letterCellParent)
     {
@@ -31,7 +31,7 @@ internal class LetterCell: Object
     {
         Value = letter;
         var target = Cube.transform;
-        target.transform.position -= new Vector3(0, 0, zOffset);
+        // target.transform.position -= new Vector3(0, 0, zOffset);
         RenderLetter(i, j);
     }
 
@@ -47,6 +47,7 @@ internal class LetterCell: Object
         t.fontSize = fontSize;
         // fudge factor to get reasonable text size (need to scale by cell size)
         t.transform.localScale *= CellSize/8.125f;
+        t.offsetZ = -0.1f;
         t.font.GetCharacterInfo(Value, out CharacterInfo info);
         /*
          https://docs.unity3d.com/ScriptReference/CharacterInfo.html
@@ -56,9 +57,9 @@ internal class LetterCell: Object
             .2f);
             */
         t.transform.position = Cube.transform.position - new Vector3(
-            CellSize/6.0f,
-            -1.0f * CellSize/3.0f,
-            zOffset);
+            CellSize / 6.0f,
+            -1.0f * CellSize / 3.0f,
+            Cube.transform.localScale.z/2.0f - t.offsetZ);
     }
 
     internal bool GuessLetter(char letter, int i, int j)
