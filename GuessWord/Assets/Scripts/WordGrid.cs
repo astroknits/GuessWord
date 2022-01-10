@@ -87,18 +87,6 @@ internal class WordGrid : Object
         return Mathf.Min(cellWidth, cellHeight);
     }
 
-    internal void MakeGuess(InputField input)
-    {
-        if (input.text.Length > 0)
-        {
-            Debug.Log("Text has been entered");
-        }
-        else if (input.text.Length == 0)
-        {
-            Debug.Log("Main Input Empty");
-        }
-    }
-
     internal bool GuessWord(string word)
     {
         bool match = m_Grid[m_GuessCount].GuessWord(word);

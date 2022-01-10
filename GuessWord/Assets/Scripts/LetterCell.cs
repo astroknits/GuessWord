@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 internal class LetterCell: Object
 {
     internal char Value;
     internal char Solution;
+    internal bool Match;
     internal Vector3 Centre;
     internal float CellSize;
     internal GameObject Cube;
@@ -31,40 +33,35 @@ internal class LetterCell: Object
     {
         Value = letter;
         var target = Cube.transform;
-        // target.transform.position -= new Vector3(0, 0, zOffset);
         RenderLetter(i, j);
     }
 
-    internal void RenderLetter(int i, int j)
+    internal void SetBoxColor(Color color)
     {
-        // TODO: Revisit, make text location tuning less hacky
-        int fontSize = 50;
-        GameObject text = new GameObject($"Guess {j} Letter {i}: {Value.ToString()}");
-        text.transform.parent = LetterCellParent.transform;
-        TextMesh t = text.AddComponent<TextMesh>();
-        t.text = Value.ToString();
-        t.color = Color.gray;
-        t.fontSize = fontSize;
-        // fudge factor to get reasonable text size (need to scale by cell size)
-        t.transform.localScale *= CellSize/8.125f;
-        t.offsetZ = -0.1f;
-        t.font.GetCharacterInfo(Value, out CharacterInfo info);
-        /*
-         https://docs.unity3d.com/ScriptReference/CharacterInfo.html
-        t.transform.position = Cube.transform.position - new Vector3(
-            info.glyphWidth / 2.0f + CellSize/4.0f,
-            -1.0f * info.glyphHeight / 2.0f + CellSize/4.0f,
-            .2f);
-            */
-        t.transform.position = Cube.transform.position - new Vector3(
-            CellSize / 6.0f,
-            -1.0f * CellSize / 3.0f,
-            Cube.transform.localScale.z/2.0f - t.offsetZ);
+        Cube.GetComponent<Renderer>().material.color = color;
     }
 
+    internal void RenderLetter(int i, int j, int fontSize=5)
+    {
+        GameObject text = new GameObject($"Guess {j} Letter {i}: {Value.ToString()}");
+        text.transform.parent = LetterCellParent.transform;
+        AddTextMesh(text, fontSize);
+        text.transform.position = Cube.transform.position - new Vector3(
+            0, 0, CellSize / 2.0f);
+    }
+
+    internal void AddTextMesh(GameObject text, int fontSize)
+    {
+        TextMeshPro t = text.AddComponent<TextMeshPro>();
+        t.text = Value.ToString();
+        t.color = Color.black;
+        t.fontSize = fontSize;
+        t.alignment = TextAlignmentOptions.Center;
+    }
     internal bool GuessLetter(char letter, int i, int j)
     {
         SetValue(letter, i, j);
-        return (Value == Solution);
+        Match = Value == Solution;
+        return Match;
     }
 }

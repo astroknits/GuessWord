@@ -31,17 +31,40 @@ internal class Word
 
     internal bool GuessWord(string word)
     {
-        bool match = true;
+        SetWord(word);
+        SetLetterColors();
+        Debug.Log($"Word {word} is a match? {Match}");
+        return Match;
+    }
+
+    internal void SetWord(string word)
+    {
+        Match = true;
         for (int i = 0; i < word.Length; i++)
         {
             if (!Value[i].GuessLetter(word[i], i, GuessNumber))
             {
-                match = false;
+                Match = false;
             }
         }
+    }
 
-        Match = match;
-        Debug.Log($"Word {word} is a match? {match}");
-        return match;
+    internal void SetLetterColors()
+    {
+        for (int i = 0; i < Value.Length; i++)
+        {
+            if (Value[i].Match)
+            {
+                Value[i].SetBoxColor(Color.green);
+            }
+            else if (Solution.Contains(Value[i].Value.ToString()))
+            {
+                Value[i].SetBoxColor(Color.blue);
+            }
+            else
+            {
+                Value[i].SetBoxColor(Color.grey);
+            }
+        }
     }
 }

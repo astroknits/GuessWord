@@ -1,11 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using TMPro;
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine.Accessibility;
 using UnityEngine.UI;
@@ -66,6 +63,8 @@ public class GuessWord : MonoBehaviour
     internal void SetUpInputField()
     {
         m_InputField = GameObject.Find("InputGuessTextField").GetComponent<TMP_InputField>();
+        m_InputField.transform.position -= new Vector3(250.0f, 700.0f); // for higher res
+        m_InputField.transform.localScale *= 3.5f; // for higher res
         m_InputField.onEndEdit.AddListener(MakeGuess);
         m_InputField.gameObject.SetActive(true);
     }
@@ -77,6 +76,7 @@ public class GuessWord : MonoBehaviour
     }
     internal void MakeGuess(string word)
     {
+        word = word.ToUpper();
         if (!IsValid(word))
         {
             Debug.Log($"Word {word} is not valid; please try again.");
@@ -102,12 +102,27 @@ public class GuessWord : MonoBehaviour
         }
     }
 
-    internal bool Message(string message, float width=3.0f, float height=2.5f, float yOffset=2.5f, float zOffset=-4.0f)
+    internal bool Message(string message,
+                          float width=3.0f, float height=2.5f,
+                          float yOffset=2.5f, float zOffset=-4.0f,
+                          int fontSize=3)
     {
-        // GUI.Box(new Rect(0,0,Screen.width/2,Screen.height/2),message);
+        // Set up the modal/dialog box
         GameObject messageBox = GameObject.CreatePrimitive(PrimitiveType.Quad);
         messageBox.transform.position = m_GameGrid.transform.position + new Vector3(0, yOffset, zOffset);
         messageBox.transform.localScale = new Vector3(width, height, 1.0f);
+
+        // Set the text message
+        GameObject messageBoxText = new GameObject("Message");
+        TextMeshPro text = messageBoxText.AddComponent<TextMeshPro>();
+        text.text = message;
+        text.color = Color.black;
+        text.fontSize = fontSize;
+        text.transform.position = messageBox.transform.position;
+        text.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
+
+
+
         // GameObject.Destroy(messageBox);
         return true;
     }
@@ -116,14 +131,14 @@ public class GuessWord : MonoBehaviour
     {
         string message = $"Congratulations!  You've guessed the solution, {WordGridObject.m_Solution}";
         DeactivateInputField();
-        Message(message);
+        Message(message + "\n\nPlay again?\n");
     }
 
     internal void OnLose()
     {
         string message = $"Game over!  The solution was {WordGridObject.m_Solution}";
         DeactivateInputField();
-        Message(message);
+        Message(message + "\n\nPlay again?\n");
     }
 
     internal bool IsValid(string word)
