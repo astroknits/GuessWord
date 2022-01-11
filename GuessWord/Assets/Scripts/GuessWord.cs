@@ -12,11 +12,15 @@ public class GuessWord : MonoBehaviour
     [Header("Game Objects")]
     [SerializeField]
     internal GameObject m_LetterBox;
+
     [SerializeField]
     public GameObject m_GameGrid;
 
     [SerializeField]
     internal Canvas m_CanvasObject; // Assign in inspector
+
+    [SerializeField]
+    internal Button m_Button;
 
     internal TMP_InputField m_InputField;
 
@@ -45,6 +49,7 @@ public class GuessWord : MonoBehaviour
     void Start()
     {
         PrintGridInfo();
+        SetUpInputField();
         StartNewGame();
     }
 
@@ -55,7 +60,7 @@ public class GuessWord : MonoBehaviour
 
     internal void StartNewGame()
     {
-        SetUpInputField();
+        ActivateInputField();
         WordGridObject = new WordGrid(m_LetterBox, m_GameGrid, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
         WordGridObject.Run();
     }
@@ -65,6 +70,10 @@ public class GuessWord : MonoBehaviour
         m_InputField = GameObject.Find("InputGuessTextField").GetComponent<TMP_InputField>();
         m_InputField.transform.position -= new Vector3(250.0f, 700.0f); // for higher res
         m_InputField.transform.localScale *= 3.5f; // for higher res
+    }
+
+    internal void ActivateInputField()
+    {
         m_InputField.onEndEdit.AddListener(MakeGuess);
         m_InputField.gameObject.SetActive(true);
     }
@@ -105,7 +114,7 @@ public class GuessWord : MonoBehaviour
     internal bool Message(string message,
                           float width=3.0f, float height=2.5f,
                           float yOffset=2.5f, float zOffset=-4.0f,
-                          int fontSize=3)
+                          int fontSize=2)
     {
         // Set up the modal/dialog box
         GameObject messageBox = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -121,15 +130,39 @@ public class GuessWord : MonoBehaviour
         text.transform.position = messageBox.transform.position;
         text.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
 
+        Button buttonGameObject = Instantiate(m_Button, new Vector3(140.0f, 340.0f, 5.5f), Quaternion.identity) as Button;
+        buttonGameObject.enabled = true;
+        buttonGameObject.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
 
+        var rectTransform = buttonGameObject.GetComponent<RectTransform>();
+        rectTransform.SetParent(m_CanvasObject.transform, false);
+        rectTransform.sizeDelta = new Vector2(60.0f, 35.0f);
+
+        var button = buttonGameObject.GetComponent<Button>();
+        button.onClick.AddListener(Restart);
+        TextMeshProUGUI textMesh = buttonGameObject.GetComponentInChildren<TextMeshProUGUI>();
+        textMesh.fontSize = 15;
+        textMesh.text = "Yes";
+        textMesh.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
 
         // GameObject.Destroy(messageBox);
         return true;
     }
 
+    internal void CleanUpOldGame()
+    {
+
+    }
+
+    internal void Restart()
+    {
+        CleanUpOldGame();
+        StartNewGame();
+    }
+
     internal void OnWin()
     {
-        string message = $"Congratulations!  You've guessed the solution, {WordGridObject.m_Solution}";
+        string message = $"Congratulations!\n\n The solution was {WordGridObject.m_Solution}";
         DeactivateInputField();
         Message(message + "\n\nPlay again?\n");
     }

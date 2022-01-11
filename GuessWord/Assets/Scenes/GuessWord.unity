@@ -1017,6 +1017,7 @@ MonoBehaviour:
   m_LetterBox: {fileID: 8939061967561341236, guid: 121e06a30ad33427d934db6e9a018c83, type: 3}
   m_GameGrid: {fileID: 1112689470}
   m_CanvasObject: {fileID: 717064954}
+  m_Button: {fileID: 1765782855914443071, guid: 3429fd2b714c448168ca8129c69ba94f, type: 3}
   m_WordSize: 4
   m_NumTries: 8
   m_GridMargin: 0.25
