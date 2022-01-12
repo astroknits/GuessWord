@@ -7,15 +7,40 @@ using UnityEditor;
 using UnityEngine.Accessibility;
 using UnityEngine.UI;
 
+enum KeyboardArrangement
+{
+    QWERTY,
+    ALPHA,
+    TYPE
+}
+class Keyboard : Object
+{
+    internal GameObject m_KeyPrefab;
+    internal GameObject m_KeyboardQuad;
+    internal KeyboardArrangement m_KeyboardArrangement;
+
+    internal Keyboard(GameObject keyboardQuad, GameObject keyPrefab, KeyboardArrangement arrangement)
+    {
+        m_KeyboardQuad = keyboardQuad;
+        m_KeyPrefab = keyPrefab;
+        m_KeyboardArrangement = arrangement;
+    }
+}
 
 public class GuessWord : MonoBehaviour
 {
     [Header("Game Objects")] // Assign in inspector
     [SerializeField]
-    internal GameObject m_LetterBox;
+    internal GameObject m_LetterBoxPrefab;
 
     [SerializeField]
-    internal GameObject m_GameGrid;
+    internal GameObject m_GameGridQuad;
+
+    [SerializeField]
+    internal GameObject m_KeyPrefab;
+
+    [SerializeField]
+    internal GameObject m_KeyboardQuad;
 
     [SerializeField]
     internal Canvas m_CanvasObject;
@@ -25,10 +50,9 @@ public class GuessWord : MonoBehaviour
 
     internal TMP_InputField m_InputField;
 
-    [Header("Game Dimensions")]
-    [SerializeField]
-    [Range(4, 8)]
+    [Header("Game Dimensions")] [SerializeField] [Range(4, 8)]
     internal int m_WordSize = 5; // number of letters per word
+
     [SerializeField]
     [Range(3, 12)]
     internal int m_NumTries = 6; // Number of guesses allowed per round
@@ -37,7 +61,7 @@ public class GuessWord : MonoBehaviour
     [SerializeField]
     [Range(0.0f, 1.5f)]
     internal float m_GridMargin = 0; // margin around grid, equal padding along top/bottom/sides
-    
+
     [SerializeField]
     [Range(0.0f, 1.5f)]
     internal float m_CellPadding = 0; // padding between grid cells
@@ -47,12 +71,14 @@ public class GuessWord : MonoBehaviour
     internal bool m_Won;
 
     internal MessageBox m_MessageBox;
+    internal Keyboard m_Keyboard;
     internal Dictionary m_Dictionary;
 
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
+        SetUpKeyboard();
         SetUpDictionary();
         SetUpMessageBox();
         SetUpInputField();
@@ -64,6 +90,11 @@ public class GuessWord : MonoBehaviour
 
     }
 
+    internal void SetUpKeyboard()
+    {
+        m_Keyboard = new Keyboard(m_KeyboardQuad, m_KeyPrefab, KeyboardArrangement.QWERTY);
+    }
+
     internal void SetUpDictionary()
     {
         m_Dictionary = new Dictionary();
@@ -71,15 +102,15 @@ public class GuessWord : MonoBehaviour
     internal void StartNewGame()
     {
         ActivateInputField();
-        WordGridObject = new WordGrid(m_LetterBox, m_GameGrid, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
+        WordGridObject = new WordGrid(m_LetterBoxPrefab, m_GameGridQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
         WordGridObject.Run();
     }
 
     internal void SetUpInputField()
     {
         m_InputField = GameObject.Find("InputGuessTextField").GetComponent<TMP_InputField>();
-        m_InputField.transform.position -= new Vector3(250.0f, 700.0f); // for higher res
-        m_InputField.transform.localScale *= 3.5f; // for higher res
+        // m_InputField.transform.position -= new Vector3(250.0f, 700.0f); // for higher res
+        // m_InputField.transform.localScale *= 3.5f; // for higher res
     }
 
     internal void ActivateInputField()
@@ -123,7 +154,7 @@ public class GuessWord : MonoBehaviour
 
     internal void SetUpMessageBox()
     {
-        m_MessageBox = new MessageBox(m_GameGrid, m_CanvasObject, m_Button);
+        m_MessageBox = new MessageBox(m_GameGridQuad, m_CanvasObject, m_Button);
     }
 
     internal void ShowMessageBox(string message)
