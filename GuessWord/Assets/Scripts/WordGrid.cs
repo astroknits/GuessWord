@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,8 @@ internal class WordGrid : Object
 
     internal string m_Solution;
     internal float m_ZOffset = 0.8f;
+
+    internal GameObject m_LetterBoxParent;
 
     internal WordGrid(GameObject letterBox, GameObject gameGrid, Canvas canvasObject,
         int wordSize, int numTries, float gridMargin, float cellPadding)
@@ -50,7 +53,7 @@ internal class WordGrid : Object
     internal Word[] SetGrid()
     {
         m_Solution = GetSolution();
-        GameObject letterBoxParent = new GameObject("LetterBoxParent");
+        m_LetterBoxParent = new GameObject("LetterBoxParent");
 
         m_Grid = new Word[m_NumTries];
 
@@ -60,7 +63,7 @@ internal class WordGrid : Object
         for (int guessNumber = 0; guessNumber < m_NumTries; guessNumber++)
         {
             float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + guessNumber * (m_CellPadding + cellSize));
-            m_Grid[guessNumber] = new Word(m_Solution, letterBoxParent, guessNumber);
+            m_Grid[guessNumber] = new Word(m_Solution, m_LetterBoxParent, guessNumber);
             for (int i = 0; i<m_WordSize; i++)
             {
                 float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
@@ -70,6 +73,14 @@ internal class WordGrid : Object
         }
 
         return m_Grid;
+    }
+
+    internal void Destroy()
+    {
+        foreach (var gameObject in m_LetterBoxParent.GetComponentsInChildren<Transform>())
+        {
+            GameObject.Destroy(gameObject.gameObject);
+        }
     }
 
     internal Vector3 GetUpperLeftCorner(Vector3 gridPosition, Vector3 gridScale)

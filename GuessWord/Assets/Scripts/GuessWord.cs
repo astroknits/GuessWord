@@ -6,66 +6,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine.Accessibility;
 using UnityEngine.UI;
-internal delegate void ButtonDelegate();
 
-internal class MessageBox : Object
-{
-    internal GameObject m_GameGrid;
-    internal Canvas m_CanvasObject;
-    internal Button m_ButtonPrefab;
-    internal ButtonDelegate m_ButtonCallback;
-    internal Button m_Button;
-    internal MessageBox(GameObject gameGrid, Canvas canvasObject, Button button, ButtonDelegate callback)
-    {
-        m_GameGrid = gameGrid;
-        m_CanvasObject = canvasObject;
-        m_ButtonPrefab = button;
-        m_ButtonCallback = callback;
-    }
-
-    internal bool Show(string message,
-        float width=3.0f, float height=2.5f,
-        float yOffset=2.5f, float zOffset=-4.0f,
-        int fontSize=2)
-    {
-        // Set up the modal/dialog box
-        GameObject messageBox = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        messageBox.transform.position = m_GameGrid.transform.position + new Vector3(0, yOffset, zOffset);
-        messageBox.transform.localScale = new Vector3(width, height, 1.0f);
-
-        // Set the text message
-        GameObject messageBoxText = new GameObject("Message");
-        TextMeshPro text = messageBoxText.AddComponent<TextMeshPro>();
-        text.text = message;
-        text.color = Color.black;
-        text.fontSize = fontSize;
-        text.transform.position = messageBox.transform.position;
-        text.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
-
-        Button buttonGameObject = Instantiate(m_ButtonPrefab, new Vector3(140.0f, 340.0f, 5.5f), Quaternion.identity);
-        buttonGameObject.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
-
-        var rectTransform = buttonGameObject.GetComponent<RectTransform>();
-        rectTransform.SetParent(m_CanvasObject.transform, false);
-        rectTransform.sizeDelta = new Vector2(60.0f, 35.0f);
-
-        m_Button = buttonGameObject.GetComponent<Button>();
-        m_Button.onClick.AddListener(Callback);
-        TextMeshProUGUI textMesh = buttonGameObject.GetComponentInChildren<TextMeshProUGUI>();
-        textMesh.fontSize = 15;
-        textMesh.text = "Yes";
-        textMesh.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
-
-        // GameObject.Destroy(messageBox);
-        return true;
-    }
-
-    internal void Callback()
-    {
-        Debug.Log($"IN CALLBACK NOW.");
-        m_ButtonCallback();
-    }
-}
 public class GuessWord : MonoBehaviour
 {
     [Header("Game Objects")] // Assign in inspector
@@ -110,7 +51,7 @@ public class GuessWord : MonoBehaviour
     void Start()
     {
         PrintGridInfo();
-        SetMessageBox();
+        SetUpMessageBox();
         SetUpInputField();
         StartNewGame();
     }
@@ -173,23 +114,16 @@ public class GuessWord : MonoBehaviour
         }
     }
 
-    internal void SetMessageBox()
+    internal void SetUpMessageBox()
     {
-        m_MessageBox = new MessageBox(m_GameGrid, m_CanvasObject, m_Button, Restart);
+        m_MessageBox = new MessageBox(m_GameGrid, m_CanvasObject, m_Button);
     }
 
-    internal void ShowMessageBox(string message,
-                                 float width=3.0f, float height=2.5f,
-                                 float yOffset=2.5f, float zOffset=-4.0f,
-                                 int fontSize=2)
+    internal void ShowMessageBox(string message)
     {
-        m_MessageBox.Show(message, width, height, yOffset, zOffset, fontSize);
-        m_MessageBox.m_Button.onClick.AddListener(Restart);
-    }
-
-    internal void CleanUpOldGame()
-    {
-
+        m_MessageBox.Show(message);
+        m_MessageBox.m_YesButton.GetComponent<Button>().onClick.AddListener(Restart);
+        // m_MessageBox.m_NoButton.GetComponent<Button>().onClick.AddListener(CleanUpOldGame);
     }
 
     internal void Restart()
@@ -197,6 +131,12 @@ public class GuessWord : MonoBehaviour
         Debug.Log($"Restarting.");
         CleanUpOldGame();
         StartNewGame();
+    }
+
+    internal void CleanUpOldGame()
+    {
+        m_MessageBox.Destroy();
+        WordGridObject.Destroy();
     }
 
     internal void OnWin()
