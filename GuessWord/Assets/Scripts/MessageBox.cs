@@ -16,8 +16,7 @@ internal class MessageBox : Object
     // Actual game objects instantiated for message box
     internal Button m_YesButton;
     internal Button m_NoButton;
-    internal GameObject m_Quad;
-    internal GameObject m_QuadText;
+    internal GameObject m_Modal;
 
     internal MessageBox(GameObject gameGrid, Canvas canvasObject, Button buttonPrefab)
     {
@@ -26,68 +25,110 @@ internal class MessageBox : Object
         m_ButtonPrefab = buttonPrefab;
     }
 
-    internal void Show(string message,
-        float width = 3.0f, float height = 2.5f,
-        float yOffset = 2.5f, float zOffset = -4.0f,
-        int fontSize = 2)
+    internal void Show(string message)
     {
-        SetUpQuad(width, height, yOffset,  zOffset);
-        SetUpQuadText(message, width,  height, fontSize);
-        SetYesButton(width, height);
-        SetNoButton(width, height);
+        Color modalColor = Color.grey;
+        Color textColor = Color.black;
+
+        // hack
+        float yOffset = 125.0f;
+
+        float width = 600.0f;
+        float height = 300.0f + yOffset;
+        float padding = 50.0f;
+
+        Vector3 pos = new Vector3(540.0f, 620.0f, 0);
+
+        SetUpModalBackground(pos, width, height, modalColor);
+        SetUpModalText(message, pos, width, height, padding, textColor);
+
+        float buttonWidth = 220.0f;
+        float buttonHeight = 120.0f;
+        float buttonXPos = 140.0f;
+        float buttonYPos = -400.0f - yOffset/2.0f;
+        Vector3 yesButtonPos = new Vector3(buttonXPos, buttonYPos, 0);
+        Vector3 noButtonPos = new Vector3(-1.0f * buttonXPos, buttonYPos, 0);
+        int fontSize = 36;
+
+        SetYesButton(buttonWidth, buttonHeight, yesButtonPos, padding/2.0f, fontSize);
+        SetNoButton(buttonWidth, buttonHeight, noButtonPos, padding/2.0f, fontSize);
+    }
+
+    internal void SetUpModalBackground(Vector3 pos, float width, float height, Color modalColor)
+    {
+        // Set up modal and parent it under the canvas
+        // Parent object will be a grey rectangle
+        m_Modal = new GameObject("Modal");
+        m_Modal.transform.SetParent(m_CanvasObject.transform);
+
+        // Set up solid color image of dimension width x height
+        CanvasRenderer renderer = m_Modal.AddComponent<CanvasRenderer>();
+        renderer.cullTransparentMesh = true;
+        Image image = m_Modal.AddComponent<Image>();
+        image.color = modalColor;
+        RectTransform rectTransform = m_Modal.GetComponent<RectTransform>();
+        rectTransform.position = pos;
+        rectTransform.sizeDelta = new Vector2(width, height);
+    }
+
+    internal void SetUpModalText(
+                   string message,
+                   Vector3 pos,
+                   float width,
+                   float height,
+                   float padding,
+                   Color textColor)
+    {
+        // Set up child GameObject for the text
+        GameObject modalText = new GameObject("ModalText");
+        modalText.transform.SetParent(m_Modal.transform);
+        TextMeshProUGUI text = modalText.AddComponent<TextMeshProUGUI>();
+        text.text = message;
+        text.color = textColor;
+
+        RectTransform textRectTransform = modalText.GetComponent<RectTransform>();
+        textRectTransform.position = pos;
+        textRectTransform.sizeDelta = new Vector2(width - padding, height - padding);
     }
 
     internal void Destroy()
     {
         GameObject.Destroy(m_YesButton.gameObject);
         GameObject.Destroy(m_NoButton.gameObject);
-        GameObject.Destroy(m_Quad.gameObject);
-        GameObject.Destroy(m_QuadText.gameObject);
+        GameObject.Destroy(m_Modal.gameObject);
     }
 
-    internal void SetUpQuadText(string message, float width, float height, int fontSize)
+    internal void SetYesButton(float width, float height, Vector3 pos, float padding, int fontSize)
     {
-        // Set the text message
-        m_QuadText = new GameObject("Message");
-        TextMeshPro text = m_QuadText.AddComponent<TextMeshPro>();
-        text.text = message;
-        text.color = Color.black;
-        text.fontSize = fontSize;
-        text.transform.position = m_Quad.transform.position;
-        text.rectTransform.sizeDelta = new Vector2(width * .9f, height * .9f);
-    }
-    internal void SetUpQuad(float width, float height, float yOffset, float zOffset)
-    {
-        // Set up the modal/dialog box
-        m_Quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        m_Quad.transform.position = m_GameGrid.transform.position + new Vector3(0, yOffset, zOffset);
-        m_Quad.transform.localScale = new Vector3(width, height, 1.0f);
-    }
-    internal void SetYesButton(float width, float height)
-    {
-        m_YesButton = GetButton(width, height);
+        m_YesButton = GetButton("Yes", width, height, pos, padding, fontSize);
     }
 
-    internal void SetNoButton(float width, float height)
+    internal void SetNoButton(float width, float height, Vector3 pos, float padding, int fontSize)
     {
-        m_NoButton = GetButton(width, height, -140.0f, "No");
+        m_NoButton = GetButton("No", width, height, pos, padding, fontSize);
     }
 
-    internal Button GetButton(float width, float height, float xPos=140.0f, string message="Yes")
+    internal Button GetButton(
+                     string message,
+                     float width,
+                     float height,
+                     Vector3 buttonPosition,
+                     float padding,
+                     int fontSize)
     {
-        Button buttonGameObject = Instantiate(m_ButtonPrefab, new Vector3(xPos, 560.0f, 5.5f), Quaternion.identity);
-        buttonGameObject.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
+        Button buttonGameObject = Instantiate(m_ButtonPrefab, buttonPosition, Quaternion.identity);
+        buttonGameObject.transform.SetParent(m_CanvasObject.transform, false);
 
         var rectTransform = buttonGameObject.GetComponent<RectTransform>();
-        rectTransform.SetParent(m_CanvasObject.transform, false);
-        rectTransform.sizeDelta = new Vector2(60.0f, 35.0f);
+        rectTransform.sizeDelta = new Vector2(width, height);
 
-        Button button = buttonGameObject.GetComponent<Button>();
-        // m_Button.onClick.AddListener(Callback);
+        // TODO: find a way to get the delegate working so we can define callback here
+        // Button button = buttonGameObject.GetComponent<Button>();
+        // button.onClick.AddListener(Callback);
         TextMeshProUGUI textMesh = buttonGameObject.GetComponentInChildren<TextMeshProUGUI>();
-        textMesh.fontSize = 15;
+        textMesh.fontSize = fontSize;
         textMesh.text = message;
-        textMesh.rectTransform.sizeDelta = new Vector2(width * .9f, height * .9f);
+        textMesh.rectTransform.sizeDelta = new Vector2(width - padding, height - padding);
         return buttonGameObject;
     }
 }
