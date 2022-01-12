@@ -75,7 +75,7 @@ internal class MessageBox : Object
 
     internal Button GetButton(float width, float height, float xPos=140.0f, string message="Yes")
     {
-        Button buttonGameObject = Instantiate(m_ButtonPrefab, new Vector3(xPos, 340.0f, 5.5f), Quaternion.identity);
+        Button buttonGameObject = Instantiate(m_ButtonPrefab, new Vector3(xPos, 560.0f, 5.5f), Quaternion.identity);
         buttonGameObject.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
 
         var rectTransform = buttonGameObject.GetComponent<RectTransform>();
