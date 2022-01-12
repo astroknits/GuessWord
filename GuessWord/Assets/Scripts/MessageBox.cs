@@ -34,13 +34,13 @@ internal class MessageBox : Object
         SetUpQuad(width, height, yOffset,  zOffset);
         SetUpQuadText(message, width,  height, fontSize);
         SetYesButton(width, height);
-        // SetNoButton(width, height);
+        SetNoButton(width, height);
     }
 
     internal void Destroy()
     {
         GameObject.Destroy(m_YesButton.gameObject);
-        // GameObject.Destroy(m_NoButton.gameObject);
+        GameObject.Destroy(m_NoButton.gameObject);
         GameObject.Destroy(m_Quad.gameObject);
         GameObject.Destroy(m_QuadText.gameObject);
     }

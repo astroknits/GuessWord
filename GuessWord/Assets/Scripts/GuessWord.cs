@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine.Accessibility;
 using UnityEngine.UI;
 
+
 public class GuessWord : MonoBehaviour
 {
     [Header("Game Objects")] // Assign in inspector
@@ -46,11 +47,13 @@ public class GuessWord : MonoBehaviour
     internal bool m_Won;
 
     internal MessageBox m_MessageBox;
+    internal Dictionary m_Dictionary;
 
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
+        SetUpDictionary();
         SetUpMessageBox();
         SetUpInputField();
         StartNewGame();
@@ -61,6 +64,10 @@ public class GuessWord : MonoBehaviour
 
     }
 
+    internal void SetUpDictionary()
+    {
+        m_Dictionary = new Dictionary();
+    }
     internal void StartNewGame()
     {
         ActivateInputField();
@@ -123,12 +130,11 @@ public class GuessWord : MonoBehaviour
     {
         m_MessageBox.Show(message);
         m_MessageBox.m_YesButton.GetComponent<Button>().onClick.AddListener(Restart);
-        // m_MessageBox.m_NoButton.GetComponent<Button>().onClick.AddListener(CleanUpOldGame);
+        m_MessageBox.m_NoButton.GetComponent<Button>().onClick.AddListener(Exit);
     }
 
     internal void Restart()
     {
-        Debug.Log($"Restarting.");
         CleanUpOldGame();
         StartNewGame();
     }
@@ -137,6 +143,12 @@ public class GuessWord : MonoBehaviour
     {
         m_MessageBox.Destroy();
         WordGridObject.Destroy();
+    }
+
+    internal void Exit()
+    {
+        CleanUpOldGame();
+        Application.Quit();
     }
 
     internal void OnWin()
@@ -160,6 +172,12 @@ public class GuessWord : MonoBehaviour
             Debug.Log($"Word needs to be {m_WordSize} letters.  Please try again.");
             return false;
         }
+
+        if (!m_Dictionary.Contains(word.ToLower()))
+        {
+            return false;
+        }
+
         return true;
     }
 
