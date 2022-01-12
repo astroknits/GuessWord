@@ -6,18 +6,77 @@ using TMPro;
 using UnityEditor;
 using UnityEngine.Accessibility;
 using UnityEngine.UI;
+internal delegate void ButtonDelegate();
 
+internal class MessageBox : Object
+{
+    internal GameObject m_GameGrid;
+    internal Canvas m_CanvasObject;
+    internal Button m_ButtonPrefab;
+    internal ButtonDelegate m_ButtonCallback;
+    internal Button m_Button;
+    internal MessageBox(GameObject gameGrid, Canvas canvasObject, Button button, ButtonDelegate callback)
+    {
+        m_GameGrid = gameGrid;
+        m_CanvasObject = canvasObject;
+        m_ButtonPrefab = button;
+        m_ButtonCallback = callback;
+    }
+
+    internal bool Show(string message,
+        float width=3.0f, float height=2.5f,
+        float yOffset=2.5f, float zOffset=-4.0f,
+        int fontSize=2)
+    {
+        // Set up the modal/dialog box
+        GameObject messageBox = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        messageBox.transform.position = m_GameGrid.transform.position + new Vector3(0, yOffset, zOffset);
+        messageBox.transform.localScale = new Vector3(width, height, 1.0f);
+
+        // Set the text message
+        GameObject messageBoxText = new GameObject("Message");
+        TextMeshPro text = messageBoxText.AddComponent<TextMeshPro>();
+        text.text = message;
+        text.color = Color.black;
+        text.fontSize = fontSize;
+        text.transform.position = messageBox.transform.position;
+        text.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
+
+        Button buttonGameObject = Instantiate(m_ButtonPrefab, new Vector3(140.0f, 340.0f, 5.5f), Quaternion.identity);
+        buttonGameObject.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
+
+        var rectTransform = buttonGameObject.GetComponent<RectTransform>();
+        rectTransform.SetParent(m_CanvasObject.transform, false);
+        rectTransform.sizeDelta = new Vector2(60.0f, 35.0f);
+
+        m_Button = buttonGameObject.GetComponent<Button>();
+        m_Button.onClick.AddListener(Callback);
+        TextMeshProUGUI textMesh = buttonGameObject.GetComponentInChildren<TextMeshProUGUI>();
+        textMesh.fontSize = 15;
+        textMesh.text = "Yes";
+        textMesh.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
+
+        // GameObject.Destroy(messageBox);
+        return true;
+    }
+
+    internal void Callback()
+    {
+        Debug.Log($"IN CALLBACK NOW.");
+        m_ButtonCallback();
+    }
+}
 public class GuessWord : MonoBehaviour
 {
-    [Header("Game Objects")]
+    [Header("Game Objects")] // Assign in inspector
     [SerializeField]
     internal GameObject m_LetterBox;
 
     [SerializeField]
-    public GameObject m_GameGrid;
+    internal GameObject m_GameGrid;
 
     [SerializeField]
-    internal Canvas m_CanvasObject; // Assign in inspector
+    internal Canvas m_CanvasObject;
 
     [SerializeField]
     internal Button m_Button;
@@ -45,10 +104,13 @@ public class GuessWord : MonoBehaviour
 
     internal bool m_Won;
 
+    internal MessageBox m_MessageBox;
+
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
+        SetMessageBox();
         SetUpInputField();
         StartNewGame();
     }
@@ -111,42 +173,18 @@ public class GuessWord : MonoBehaviour
         }
     }
 
-    internal bool Message(string message,
-                          float width=3.0f, float height=2.5f,
-                          float yOffset=2.5f, float zOffset=-4.0f,
-                          int fontSize=2)
+    internal void SetMessageBox()
     {
-        // Set up the modal/dialog box
-        GameObject messageBox = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        messageBox.transform.position = m_GameGrid.transform.position + new Vector3(0, yOffset, zOffset);
-        messageBox.transform.localScale = new Vector3(width, height, 1.0f);
+        m_MessageBox = new MessageBox(m_GameGrid, m_CanvasObject, m_Button, Restart);
+    }
 
-        // Set the text message
-        GameObject messageBoxText = new GameObject("Message");
-        TextMeshPro text = messageBoxText.AddComponent<TextMeshPro>();
-        text.text = message;
-        text.color = Color.black;
-        text.fontSize = fontSize;
-        text.transform.position = messageBox.transform.position;
-        text.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
-
-        Button buttonGameObject = Instantiate(m_Button, new Vector3(140.0f, 340.0f, 5.5f), Quaternion.identity) as Button;
-        buttonGameObject.enabled = true;
-        buttonGameObject.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
-
-        var rectTransform = buttonGameObject.GetComponent<RectTransform>();
-        rectTransform.SetParent(m_CanvasObject.transform, false);
-        rectTransform.sizeDelta = new Vector2(60.0f, 35.0f);
-
-        var button = buttonGameObject.GetComponent<Button>();
-        button.onClick.AddListener(Restart);
-        TextMeshProUGUI textMesh = buttonGameObject.GetComponentInChildren<TextMeshProUGUI>();
-        textMesh.fontSize = 15;
-        textMesh.text = "Yes";
-        textMesh.rectTransform.sizeDelta = new Vector2(width*.9f, height*.9f);
-
-        // GameObject.Destroy(messageBox);
-        return true;
+    internal void ShowMessageBox(string message,
+                                 float width=3.0f, float height=2.5f,
+                                 float yOffset=2.5f, float zOffset=-4.0f,
+                                 int fontSize=2)
+    {
+        m_MessageBox.Show(message, width, height, yOffset, zOffset, fontSize);
+        m_MessageBox.m_Button.onClick.AddListener(Restart);
     }
 
     internal void CleanUpOldGame()
@@ -156,6 +194,7 @@ public class GuessWord : MonoBehaviour
 
     internal void Restart()
     {
+        Debug.Log($"Restarting.");
         CleanUpOldGame();
         StartNewGame();
     }
@@ -164,14 +203,14 @@ public class GuessWord : MonoBehaviour
     {
         string message = $"Congratulations!\n\n The solution was {WordGridObject.m_Solution}";
         DeactivateInputField();
-        Message(message + "\n\nPlay again?\n");
+        ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
     internal void OnLose()
     {
         string message = $"Game over!  The solution was {WordGridObject.m_Solution}";
         DeactivateInputField();
-        Message(message + "\n\nPlay again?\n");
+        ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
     internal bool IsValid(string word)
