@@ -95,9 +95,12 @@ internal class GuessWordGame : Object
         m_KeyboardObject.Destroy();
     }
 
-    internal bool GuessWord(string word)
+    internal bool GuessWord(string guess)
     {
-        bool match = m_WordGridObject.m_WordGrid[m_GuessCount].GuessWord(word);
+        var word = m_WordGridObject.m_WordGrid[m_GuessCount];
+        bool match = word.GuessWord(guess);
+        word.UpdateKeyboard(m_KeyboardObject);
+
         m_GuessCount += 1;
         return match;
     }

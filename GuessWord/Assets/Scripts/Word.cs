@@ -67,4 +67,16 @@ internal class Word
             }
         }
     }
+
+    internal void UpdateKeyboard(KeyboardObject keyboardObject)
+    {
+        for (int i = 0; i < Value.Length; i++)
+        {
+            var letter = Value[i].Value;
+            var color = Value[i].CellColor;
+            keyboardObject.m_Keyboard[letter].CellColor = color;
+            keyboardObject.m_Keyboard[letter].Cube.GetComponent<Renderer>().material.color = color;
+
+        }
+    }
 }
