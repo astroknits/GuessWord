@@ -22,16 +22,12 @@ internal class BaseLetterGrid : Object
     internal BaseLetterGrid(GameObject letterBox,
                       GameObject letterBoxParent,
                       GameObject gridQuad,
-                      int maxCols, // max number of cols in the grid
-                      int maxRows, // max number of rows in the grid
                       float gridMargin,
                       float cellPadding)
     {
         m_LetterBox = letterBox;
         m_LetterBoxParent = letterBoxParent;
         m_GridQuad = gridQuad;
-        m_MaxRows = maxRows;
-        m_MaxCols = maxCols;
         m_GridMargin = gridMargin;
         m_CellPadding = cellPadding;
     }

@@ -69,34 +69,30 @@ internal class GuessWordGame : Object
     internal void SetUpWordGrid()
     {
         m_LetterBoxParent = new GameObject("LetterBoxParent");
-        m_WordGridObject = new WordGridObject(m_LetterBox, m_LetterBoxParent, m_GameGridQuad, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
+        m_WordGridObject = new WordGridObject(m_LetterBox,
+                                               m_LetterBoxParent,
+                                               m_GameGridQuad,
+                                               m_WordSize,
+                                               m_NumTries,
+                                               m_GridMargin,
+                                               m_CellPadding);
     }
 
     internal void SetUpKeyboard()
     {
         m_KeyBoxParent = new GameObject("KeyBoxParent");
-        m_KeyboardObject = new KeyboardObject(m_KeyboardQuad, m_KeyBoxParent, m_KeyPrefab, KeyboardArrangement.QWERTY);
+        m_KeyboardObject = new KeyboardObject(KeyboardArrangement.QWERTY,
+                                              m_KeyPrefab,
+                                              m_KeyBoxParent,
+                                              m_KeyboardQuad,
+                                              m_GridMargin,
+                                              m_CellPadding);
     }
 
     internal void Destroy()
     {
         m_WordGridObject.Destroy();
         m_KeyboardObject.Destroy();
-    }
-
-    internal Vector3 GetUpperLeftCorner(Vector3 gridPosition, Vector3 gridScale)
-    {
-        return new Vector3(
-            gridPosition.x - gridScale.x / 2.0f,
-            gridPosition.y + gridScale.y / 2.0f,
-            gridPosition.z);
-    }
-
-    internal float GetCellSize(Vector3 gridScale)
-    {
-        float cellWidth = (gridScale.x - 2.0f * m_GridMargin - (m_WordSize - 1.0f) * m_CellPadding) / m_WordSize;
-        float cellHeight = (gridScale.y - 2.0f * m_GridMargin - (m_NumTries - 1.0f) * m_CellPadding) / m_NumTries;
-        return Mathf.Min(cellWidth, cellHeight);
     }
 
     internal bool GuessWord(string word)

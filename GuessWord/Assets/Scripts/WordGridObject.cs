@@ -8,11 +8,8 @@ internal class WordGridObject : BaseLetterGrid
 {
     // Word array for keeping track of guessed words
     internal Word[] m_WordGrid;
-
     internal int m_GuessCount;
-
     internal string m_Solution;
-    internal float m_ZOffset = 0.8f;
 
     internal WordGridObject(GameObject letterBox,
                       GameObject letterBoxParent,
@@ -21,9 +18,11 @@ internal class WordGridObject : BaseLetterGrid
                       int numTries,
                       float gridMargin,
                       float cellPadding) :
-        base(letterBox, letterBoxParent, gameGridQuad, wordSize, numTries, gridMargin, cellPadding)
+        base(letterBox, letterBoxParent, gameGridQuad, gridMargin, cellPadding)
     {
         m_GuessCount = 0;
+        m_MaxCols = wordSize;
+        m_MaxRows = numTries;
         Create();
     }
 
