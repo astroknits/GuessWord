@@ -158,14 +158,14 @@ public class GuessWordController : MonoBehaviour
 
     internal void OnWin()
     {
-        string message = $"Congratulations!\n\n The solution was {GuessWordGameObject.m_Solution}";
+        string message = $"Congratulations!\n\n The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         DeactivateInputField();
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
     internal void OnLose()
     {
-        string message = $"Game over!  The solution was {GuessWordGameObject.m_Solution}";
+        string message = $"Game over!  The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         DeactivateInputField();
         ShowMessageBox(message + "\n\nPlay again?\n");
     }

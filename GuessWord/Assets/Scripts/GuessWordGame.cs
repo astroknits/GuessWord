@@ -21,15 +21,14 @@ internal class GuessWordGame : Object
     internal float m_GridMargin = 0; // margin around grid, equal padding along top/bottom/sides
     internal float m_CellPadding = 0; // padding between grid cells
 
-    // Word array for keeping track of guessed words
-    internal Word[] m_WordGrid;
+    // Word grid for keeping track of guessed words
+    internal WordGridObject m_WordGridObject;
 
     // Keyboard
     internal KeyboardObject m_KeyboardObject;
 
     internal int m_GuessCount;
 
-    internal string m_Solution;
     internal float m_ZOffset = 0.8f;
 
     internal GameObject m_LetterBoxParent;
@@ -67,34 +66,10 @@ internal class GuessWordGame : Object
         m_CanvasObject.enabled = true;
     }
 
-    internal string GetSolution()
+    internal void SetUpWordGrid()
     {
-        return new ReferenceWordDictionary().GetRandomWord(m_WordSize).ToUpper();
-    }
-
-    internal Word[] SetUpWordGrid()
-    {
-        m_Solution = GetSolution();
         m_LetterBoxParent = new GameObject("LetterBoxParent");
-
-        m_WordGrid = new Word[m_NumTries];
-
-        float cellSize = GetCellSize(m_GameGridQuad.transform.localScale);
-        Vector3 upperLeftCorner = GetUpperLeftCorner(m_GameGridQuad.transform.position, m_GameGridQuad.transform.localScale);
-
-        for (int guessNumber = 0; guessNumber < m_NumTries; guessNumber++)
-        {
-            float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + guessNumber * (m_CellPadding + cellSize));
-            m_WordGrid[guessNumber] = new Word(m_Solution, m_LetterBoxParent, guessNumber);
-            for (int i = 0; i<m_WordSize; i++)
-            {
-                float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
-                Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - m_ZOffset);
-                m_WordGrid[guessNumber].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
-            }
-        }
-
-        return m_WordGrid;
+        m_WordGridObject = new WordGridObject(m_LetterBox, m_LetterBoxParent, m_GameGridQuad, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
     }
 
     internal void SetUpKeyboard()
@@ -103,17 +78,9 @@ internal class GuessWordGame : Object
         m_KeyboardObject = new KeyboardObject(m_KeyboardQuad, m_KeyBoxParent, m_KeyPrefab, KeyboardArrangement.QWERTY);
     }
 
-    internal void DestroyGrid()
-    {
-        foreach (var gameObject in m_LetterBoxParent.GetComponentsInChildren<Transform>())
-        {
-            GameObject.Destroy(gameObject.gameObject);
-        }
-    }
-
     internal void Destroy()
     {
-        DestroyGrid();
+        m_WordGridObject.Destroy();
         m_KeyboardObject.Destroy();
     }
 
@@ -134,7 +101,7 @@ internal class GuessWordGame : Object
 
     internal bool GuessWord(string word)
     {
-        bool match = m_WordGrid[m_GuessCount].GuessWord(word);
+        bool match = m_WordGridObject.m_WordGrid[m_GuessCount].GuessWord(word);
         m_GuessCount += 1;
         return match;
     }
