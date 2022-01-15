@@ -27,10 +27,13 @@ internal class LetterCell: Object
         Cube.transform.parent = LetterCellParent.transform;
     }
 
+    internal void SetValue(char letter)
+    {
+        Value = letter;
+    }
     internal void SetValue(char letter, int i, int j)
     {
         Value = letter;
-        var target = Cube.transform;
         RenderLetter(i, j);
     }
 
