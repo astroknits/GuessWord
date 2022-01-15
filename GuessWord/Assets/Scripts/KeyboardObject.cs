@@ -61,7 +61,7 @@ class KeyboardObject : Object
         m_Solution = GetSolution();
         m_LetterBoxParent = new GameObject("LetterBoxParent");
 
-        m_Grid = new Word[m_NumTries];
+        m_WordGrid = new Word[m_NumTries];
 
         float cellSize = GetCellSize(m_GameGridQuad.transform.localScale);
         Vector3 upperLeftCorner = GetUpperLeftCorner(m_GameGridQuad.transform.position, m_GameGridQuad.transform.localScale);
@@ -69,16 +69,16 @@ class KeyboardObject : Object
         for (int guessNumber = 0; guessNumber < m_NumTries; guessNumber++)
         {
             float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + guessNumber * (m_CellPadding + cellSize));
-            m_Grid[guessNumber] = new Word(m_Solution, m_LetterBoxParent, guessNumber);
+            m_WordGrid[guessNumber] = new Word(m_Solution, m_LetterBoxParent, guessNumber);
             for (int i = 0; i<m_WordSize; i++)
             {
                 float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
                 Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - m_ZOffset);
-                m_Grid[guessNumber].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
+                m_WordGrid[guessNumber].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
             }
         }
 
-        return m_Grid;
+        return m_WordGrid;
     }
     */
     internal void Destroy()

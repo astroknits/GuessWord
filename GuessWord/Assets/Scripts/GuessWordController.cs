@@ -8,7 +8,7 @@ using UnityEngine.Accessibility;
 using UnityEngine.UI;
 
 
-public class GuessWord : MonoBehaviour
+public class GuessWordController : MonoBehaviour
 {
     [Header("Game Objects")] // Assign in inspector
     [SerializeField]
@@ -47,7 +47,7 @@ public class GuessWord : MonoBehaviour
     [Range(0.0f, 1.5f)]
     internal float m_CellPadding = 0; // padding between grid cells
 
-    internal WordGrid WordGridObject;
+    internal GuessWordGame GuessWordGameObject;
 
     internal bool m_Won;
 
@@ -76,8 +76,8 @@ public class GuessWord : MonoBehaviour
     internal void StartNewGame()
     {
         ActivateInputField();
-        WordGridObject = new WordGrid(m_LetterBoxPrefab, m_KeyPrefab,  m_GameGridQuad, m_KeyboardQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
-        WordGridObject.Run();
+        GuessWordGameObject = new GuessWordGame(m_LetterBoxPrefab, m_KeyPrefab,  m_GameGridQuad, m_KeyboardQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
+        GuessWordGameObject.Run();
     }
 
     internal void SetUpInputField()
@@ -108,7 +108,7 @@ public class GuessWord : MonoBehaviour
         }
 
         // submit the guess
-        m_Won = WordGridObject.GuessWord(word);
+        m_Won = GuessWordGameObject.GuessWord(word);
 
         // clear the text field
         m_InputField.text = "";
@@ -119,7 +119,7 @@ public class GuessWord : MonoBehaviour
             return;
         }
 
-        if (WordGridObject.m_GuessCount >= m_NumTries)
+        if (GuessWordGameObject.m_GuessCount >= m_NumTries)
         {
             OnLose();
             return;
@@ -147,7 +147,7 @@ public class GuessWord : MonoBehaviour
     internal void CleanUpOldGame()
     {
         m_MessageBox.Destroy();
-        WordGridObject.Destroy();
+        GuessWordGameObject.Destroy();
     }
 
     internal void Exit()
@@ -158,14 +158,14 @@ public class GuessWord : MonoBehaviour
 
     internal void OnWin()
     {
-        string message = $"Congratulations!\n\n The solution was {WordGridObject.m_Solution}";
+        string message = $"Congratulations!\n\n The solution was {GuessWordGameObject.m_Solution}";
         DeactivateInputField();
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
     internal void OnLose()
     {
-        string message = $"Game over!  The solution was {WordGridObject.m_Solution}";
+        string message = $"Game over!  The solution was {GuessWordGameObject.m_Solution}";
         DeactivateInputField();
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
