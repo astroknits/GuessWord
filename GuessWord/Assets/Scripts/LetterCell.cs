@@ -34,7 +34,8 @@ internal class LetterCell: Object
     internal void SetValue(char letter, int i, int j)
     {
         Value = letter;
-        RenderLetter(i, j);
+        string label = $"Guess {j} Letter {i}: {Value.ToString()}";
+        RenderLetter(label);
     }
 
     internal void SetBoxColor(Color color)
@@ -43,9 +44,10 @@ internal class LetterCell: Object
         Cube.GetComponent<Renderer>().material.color = color;
     }
 
-    internal void RenderLetter(int i, int j, int fontSize=5)
+    internal void RenderLetter(string label, int fontSize=5)
     {
-        GameObject text = new GameObject($"Guess {j} Letter {i}: {Value.ToString()}");
+        // int i, int j
+        GameObject text = new GameObject(label);
         text.transform.parent = LetterCellParent.transform;
         AddTextMesh(text, fontSize);
         text.transform.position = Cube.transform.position - new Vector3(

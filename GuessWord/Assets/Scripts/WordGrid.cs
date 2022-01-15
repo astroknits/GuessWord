@@ -8,9 +8,11 @@ using UnityEngine.UI;
 internal class WordGrid : Object
 {
     internal GameObject m_LetterBox;
-    internal GameObject m_KeyPrefab;
     internal GameObject m_GameGridQuad;
+
+    internal GameObject m_KeyPrefab;
     internal GameObject m_KeyboardQuad;
+
     internal Canvas m_CanvasObject;
     internal int m_WordSize; // number of letters per word
     internal int m_NumTries; // Number of guesses allowed per round
@@ -101,12 +103,17 @@ internal class WordGrid : Object
         m_KeyboardObject = new KeyboardObject(m_KeyboardQuad, m_KeyBoxParent, m_KeyPrefab, KeyboardArrangement.QWERTY);
     }
 
-    internal void Destroy()
+    internal void DestroyGrid()
     {
         foreach (var gameObject in m_LetterBoxParent.GetComponentsInChildren<Transform>())
         {
             GameObject.Destroy(gameObject.gameObject);
         }
+    }
+
+    internal void Destroy()
+    {
+        DestroyGrid();
         m_KeyboardObject.Destroy();
     }
 
