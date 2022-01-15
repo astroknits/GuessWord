@@ -4,26 +4,26 @@ using UnityEngine;
 
 internal class Word
 {
-    internal LetterCell[] Value;
+    internal WordGridCell[] Value;
     internal string Solution;
     internal int GuessNumber;
     internal bool Match;
-    private GameObject LetterCellParent;
+    private GameObject WordGridCellParent;
 
-    internal Word(string solution, GameObject letterCellParent, int guessNumber)
+    internal Word(string solution, GameObject wordGridCellParent, int guessNumber)
     {
         Solution = solution;
-        LetterCellParent = letterCellParent;
+        WordGridCellParent = wordGridCellParent;
         GuessNumber = guessNumber;
         Value = GetEmptyWord();
     }
 
-    internal LetterCell[] GetEmptyWord()
+    internal WordGridCell[] GetEmptyWord()
     {
-        LetterCell[] word = new LetterCell[Solution.Length];
+        WordGridCell[] word = new WordGridCell[Solution.Length];
         for (int i = 0; i < Solution.Length; i++)
         {
-            word[i] = new LetterCell(Solution[i], LetterCellParent);
+            word[i] = new WordGridCell(Solution[i], WordGridCellParent);
         }
 
         return word;

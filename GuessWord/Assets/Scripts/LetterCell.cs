@@ -6,17 +6,15 @@ using UnityEngine;
 internal class LetterCell: Object
 {
     internal char Value;
-    internal char Solution;
-    internal bool Match;
     internal Vector3 Centre;
     internal float CellSize;
+    internal Color CellColor;
     internal GameObject Cube;
     internal GameObject LetterCellParent;
     // internal float zOffset = 0.2f;
 
-    internal LetterCell(char solution, GameObject letterCellParent)
+    internal LetterCell(GameObject letterCellParent)
     {
-        Solution = solution;
         LetterCellParent = letterCellParent;
     }
 
@@ -38,6 +36,7 @@ internal class LetterCell: Object
 
     internal void SetBoxColor(Color color)
     {
+        CellColor = color;
         Cube.GetComponent<Renderer>().material.color = color;
     }
 
@@ -57,11 +56,5 @@ internal class LetterCell: Object
         t.color = Color.black;
         t.fontSize = fontSize;
         t.alignment = TextAlignmentOptions.Center;
-    }
-    internal bool GuessLetter(char letter, int i, int j)
-    {
-        SetValue(letter, i, j);
-        Match = Value == Solution;
-        return Match;
     }
 }
