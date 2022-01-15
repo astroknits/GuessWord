@@ -52,7 +52,7 @@ public class GuessWord : MonoBehaviour
     internal bool m_Won;
 
     internal MessageBox m_MessageBox;
-    internal Dictionary m_Dictionary;
+    internal ReferenceWordDictionary m_Dictionary;
 
     // Start is called before the first frame update
     void Start()
@@ -71,7 +71,7 @@ public class GuessWord : MonoBehaviour
 
     internal void SetUpDictionary()
     {
-        m_Dictionary = new Dictionary();
+        m_Dictionary = new ReferenceWordDictionary();
     }
     internal void StartNewGame()
     {

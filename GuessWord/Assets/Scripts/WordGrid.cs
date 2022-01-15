@@ -67,7 +67,7 @@ internal class WordGrid : Object
 
     internal string GetSolution()
     {
-        return new Dictionary().GetRandomWord(m_WordSize).ToUpper();
+        return new ReferenceWordDictionary().GetRandomWord(m_WordSize).ToUpper();
     }
 
     internal Word[] SetUpGrid()
