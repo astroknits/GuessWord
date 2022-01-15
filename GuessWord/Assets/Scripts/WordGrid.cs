@@ -4,18 +4,57 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+enum KeyboardArrangement
+{
+    QWERTY,
+    ALPHA,
+    TYPE
+}
+
+class KeyboardCell : LetterCell
+{
+    internal KeyboardCell(GameObject letterCellParent) : base(letterCellParent) {}
+}
+
+
+class KeyboardObject : Object
+{
+    internal GameObject m_KeyPrefab;
+    internal GameObject m_KeyboardQuad;
+    internal KeyboardArrangement m_KeyboardArrangement;
+
+    internal KeyboardCell[] m_Keyboard;
+
+    internal GameObject m_KeyBoxParent;
+
+    internal KeyboardObject(GameObject keyboardQuad, GameObject keyPrefab, KeyboardArrangement arrangement)
+    {
+        m_KeyboardQuad = keyboardQuad;
+        m_KeyPrefab = keyPrefab;
+        m_KeyboardArrangement = arrangement;
+    }
+}
+
+
 internal class WordGrid : Object
 {
     internal GameObject m_LetterBox;
+    internal GameObject m_KeyPrefab;
     internal GameObject m_GameGrid;
+    internal GameObject m_KeyboardQuad;
     internal Canvas m_CanvasObject;
     internal int m_WordSize; // number of letters per word
     internal int m_NumTries; // Number of guesses allowed per round
+
     // Grid settings
     internal float m_GridMargin = 0; // margin around grid, equal padding along top/bottom/sides
     internal float m_CellPadding = 0; // padding between grid cells
 
+    // Word array for keeping track of guessed words
     internal Word[] m_Grid;
+
+    // Keyboard
+    internal KeyboardObject m_KeyboardObject;
 
     internal int m_GuessCount;
 
@@ -24,11 +63,13 @@ internal class WordGrid : Object
 
     internal GameObject m_LetterBoxParent;
 
-    internal WordGrid(GameObject letterBox, GameObject gameGrid, Canvas canvasObject,
+    internal WordGrid(GameObject letterBox, GameObject keyPrefab, GameObject gameGrid, GameObject keyboardQuad, Canvas canvasObject,
         int wordSize, int numTries, float gridMargin, float cellPadding)
     {
         m_LetterBox = letterBox;
+        m_KeyPrefab = keyPrefab;
         m_GameGrid = gameGrid;
+        m_KeyboardQuad = keyboardQuad;
         m_CanvasObject = canvasObject;
         m_WordSize = wordSize;
         m_NumTries = numTries;
@@ -73,6 +114,11 @@ internal class WordGrid : Object
         }
 
         return m_Grid;
+    }
+
+    internal void SetUpKeyboard()
+    {
+        m_KeyboardObject = new KeyboardObject(m_KeyboardQuad, m_KeyPrefab, KeyboardArrangement.QWERTY);
     }
 
     internal void Destroy()

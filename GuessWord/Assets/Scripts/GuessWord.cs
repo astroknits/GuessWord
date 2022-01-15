@@ -7,25 +7,6 @@ using UnityEditor;
 using UnityEngine.Accessibility;
 using UnityEngine.UI;
 
-enum KeyboardArrangement
-{
-    QWERTY,
-    ALPHA,
-    TYPE
-}
-class Keyboard : Object
-{
-    internal GameObject m_KeyPrefab;
-    internal GameObject m_KeyboardQuad;
-    internal KeyboardArrangement m_KeyboardArrangement;
-
-    internal Keyboard(GameObject keyboardQuad, GameObject keyPrefab, KeyboardArrangement arrangement)
-    {
-        m_KeyboardQuad = keyboardQuad;
-        m_KeyPrefab = keyPrefab;
-        m_KeyboardArrangement = arrangement;
-    }
-}
 
 public class GuessWord : MonoBehaviour
 {
@@ -34,10 +15,10 @@ public class GuessWord : MonoBehaviour
     internal GameObject m_LetterBoxPrefab;
 
     [SerializeField]
-    internal GameObject m_GameGridQuad;
+    internal GameObject m_KeyPrefab;
 
     [SerializeField]
-    internal GameObject m_KeyPrefab;
+    internal GameObject m_GameGridQuad;
 
     [SerializeField]
     internal GameObject m_KeyboardQuad;
@@ -71,14 +52,12 @@ public class GuessWord : MonoBehaviour
     internal bool m_Won;
 
     internal MessageBox m_MessageBox;
-    internal Keyboard m_Keyboard;
     internal Dictionary m_Dictionary;
 
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
-        SetUpKeyboard();
         SetUpDictionary();
         SetUpMessageBox();
         SetUpInputField();
@@ -90,11 +69,6 @@ public class GuessWord : MonoBehaviour
 
     }
 
-    internal void SetUpKeyboard()
-    {
-        m_Keyboard = new Keyboard(m_KeyboardQuad, m_KeyPrefab, KeyboardArrangement.QWERTY);
-    }
-
     internal void SetUpDictionary()
     {
         m_Dictionary = new Dictionary();
@@ -102,7 +76,7 @@ public class GuessWord : MonoBehaviour
     internal void StartNewGame()
     {
         ActivateInputField();
-        WordGridObject = new WordGrid(m_LetterBoxPrefab, m_GameGridQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
+        WordGridObject = new WordGrid(m_LetterBoxPrefab, m_KeyPrefab,  m_GameGridQuad, m_KeyboardQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
         WordGridObject.Run();
     }
 
