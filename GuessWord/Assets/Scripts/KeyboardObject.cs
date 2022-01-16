@@ -35,7 +35,6 @@ internal class KeyboardObject : BaseLetterGrid
         Vector3 upperLeftCorner = GetUpperLeftCorner();
 
         char[] alpha = m_KeyboardArrangement.m_CharArray;
-        var test = String.Join(",  ", alpha);
         float cellCentreXStart = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f;
         float cellCentreX = cellCentreXStart;
         float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f);
