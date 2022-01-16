@@ -81,7 +81,7 @@ internal class GuessWordGame : Object
     internal void SetUpKeyboard()
     {
         m_KeyBoxParent = new GameObject("KeyBoxParent");
-        m_KeyboardObject = new KeyboardObject(KeyboardArrangement.QWERTY,
+        m_KeyboardObject = new KeyboardObject(KeyboardType.QWERTY,
                                               m_KeyPrefab,
                                               m_KeyBoxParent,
                                               m_KeyboardQuad,

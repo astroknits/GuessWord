@@ -8,7 +8,7 @@ using UnityEngine.Accessibility;
 using UnityEngine.UI;
 
 
-public class GuessWordController : MonoBehaviour
+internal class GuessWordController : MonoBehaviour
 {
     [Header("Game Objects")] // Assign in inspector
     [SerializeField]

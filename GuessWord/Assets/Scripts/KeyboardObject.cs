@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-class KeyboardObject : BaseLetterGrid
+internal class KeyboardObject : BaseLetterGrid
 {
     // Order/arrangement of the keys
     internal KeyboardArrangement m_KeyboardArrangement;
@@ -12,7 +13,7 @@ class KeyboardObject : BaseLetterGrid
     // Dictionary of KeyboardCell objects for the keyboard
     internal Dictionary<char, KeyboardCell> m_Keyboard;
 
-    internal KeyboardObject(KeyboardArrangement arrangement,
+    internal KeyboardObject(KeyboardType keyboardType,
                             GameObject letterBox,
                             GameObject letterBoxParent,
                             GameObject gridQuad,
@@ -20,9 +21,9 @@ class KeyboardObject : BaseLetterGrid
                             float cellPadding) :
         base(letterBox, letterBoxParent, gridQuad, gridMargin, cellPadding)
     {
-        m_KeyboardArrangement = arrangement;
-        m_MaxCols = 10; // maximum 9 chars per row in keyboard
-        m_MaxRows = 3; // maximum 3 rows per keyboard
+        m_KeyboardArrangement = KeyboardArrangement.GetKeyboardArrangement(keyboardType);
+        m_MaxCols = m_KeyboardArrangement.m_MaxCols;
+        m_MaxRows = m_KeyboardArrangement.m_MaxRows;
         Create();
     }
 
@@ -33,7 +34,8 @@ class KeyboardObject : BaseLetterGrid
         float cellSize = GetCellSize();
         Vector3 upperLeftCorner = GetUpperLeftCorner();
 
-        char[] alpha = GetCharArray();
+        char[] alpha = m_KeyboardArrangement.m_CharArray;
+        var test = String.Join(",  ", alpha);
         float cellCentreXStart = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f;
         float cellCentreX = cellCentreXStart;
         float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f);
@@ -50,20 +52,6 @@ class KeyboardObject : BaseLetterGrid
                 cellCentreY -= (m_CellPadding + cellSize);
                 cellCentreX = cellCentreXStart;
             }
-        }
-    }
-    internal char[] GetCharArray()
-    {
-        switch (m_KeyboardArrangement)
-        {
-            case KeyboardArrangement.ALPHA:
-                return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-
-            case KeyboardArrangement.QWERTY:
-                return "QWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
-
-            default:
-                return "QWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
         }
     }
 }

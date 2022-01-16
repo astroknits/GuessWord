@@ -207,8 +207,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 72
+  m_fontSizeBase: 72
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -548,7 +548,7 @@ Transform:
   m_GameObject: {fileID: 605834797}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.07040551, y: -0.48733285, z: 8.214122}
-  m_LocalScale: {x: 9, y: 16, z: 1}
+  m_LocalScale: {x: 7.2, y: 12.8, z: 0.8}
   m_Children: []
   m_Father: {fileID: 1006534761}
   m_RootOrder: 2
@@ -658,8 +658,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 72
+  m_fontSizeBase: 72
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -827,7 +827,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &882838330
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -939,10 +939,10 @@ RectTransform:
   m_Father: {fileID: 717064955}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -140, y: -320}
-  m_SizeDelta: {x: 300, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 340, y: 100}
+  m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &954064111
 MonoBehaviour:
@@ -1001,7 +1001,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 36
+  m_GlobalPointSize: 72
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -1143,8 +1143,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_LetterBoxPrefab: {fileID: 8939061967561341236, guid: 121e06a30ad33427d934db6e9a018c83, type: 3}
-  m_GameGridQuad: {fileID: 1112689470}
   m_KeyPrefab: {fileID: 8939061967561341236, guid: 90335708f67ce4850bfa62bcf19423d9, type: 3}
+  m_GameGridQuad: {fileID: 1112689470}
   m_KeyboardQuad: {fileID: 882838329}
   m_CanvasObject: {fileID: 717064954}
   m_Button: {fileID: 1765782855914443071, guid: 3429fd2b714c448168ca8129c69ba94f, type: 3}
