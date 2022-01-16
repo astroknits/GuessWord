@@ -40,6 +40,11 @@ internal class BaseLetterGrid : Object
         }
     }
 
+    internal Vector3 GetCentre()
+    {
+        return m_GridQuad.transform.position;
+    }
+
     internal Vector3 GetUpperLeftCorner()
     {
         Vector3 gridPosition = m_GridQuad.transform.position;

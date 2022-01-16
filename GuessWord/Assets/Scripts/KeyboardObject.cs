@@ -32,24 +32,29 @@ internal class KeyboardObject : BaseLetterGrid
         m_Keyboard = new Dictionary<char, KeyboardCell>();
 
         float cellSize = GetCellSize();
+        char[][] alpha = m_KeyboardArrangement.m_KeyboardLetterGrid;
+
+        PopulateKeyboard(cellSize, alpha);
+    }
+
+    internal void PopulateKeyboard(float cellSize, char[][] alpha){
+
         Vector3 upperLeftCorner = GetUpperLeftCorner();
 
-        char[] alpha = m_KeyboardArrangement.m_CharArray;
-        float cellCentreXStart = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f;
-        float cellCentreX = cellCentreXStart;
-        float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f);
-        for (int l = 0; l < alpha.Length; l++)
+        for (int j = 0; j < alpha.Length; j++)
         {
-            char letter = alpha[l];
-            Vector3 centre = new Vector3(cellCentreX, cellCentreY, 9.5f);
-            m_Keyboard.Add(letter, new KeyboardCell(letter, m_LetterBoxParent));
-            m_Keyboard[letter].ConfigureCell(centre, cellSize, m_LetterBox);
-            m_Keyboard[letter].RenderLetter(letter.ToString(), 3);
-            cellCentreX += (m_CellPadding + cellSize);
-            if (letter == 'P' || letter == 'L')
+            float cellCentreY = upperLeftCorner.y - (m_GridMargin + cellSize / 2.0f + j * (m_CellPadding + cellSize));
+            char[] row = alpha[j];
+            for (int i = 0; i < row.Length; i++)
             {
-                cellCentreY -= (m_CellPadding + cellSize);
-                cellCentreX = cellCentreXStart;
+                char letter = row[i];
+                float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
+                Vector3 centre = new Vector3(cellCentreX, cellCentreY, 9.5f);
+
+                // Now apply the settings for the letter and render the key
+                m_Keyboard.Add(letter, new KeyboardCell(letter, m_LetterBoxParent));
+                m_Keyboard[letter].ConfigureCell(centre, cellSize, m_LetterBox);
+                m_Keyboard[letter].RenderLetter(letter.ToString(), 3);
             }
         }
     }
