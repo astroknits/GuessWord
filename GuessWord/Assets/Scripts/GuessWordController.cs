@@ -49,15 +49,12 @@ internal class GuessWordController : MonoBehaviour
 
     internal GuessWordGame GuessWordGameObject;
 
-    internal string m_KeyboardInput;
     internal bool m_Won;
 
     internal MessageBox m_MessageBox;
     internal ReferenceWordDictionary m_Dictionary;
 
-    internal KeyCode[] m_LetterKeyCodes;
-    internal KeyCode[] m_EnterKeyCodes;
-    internal KeyCode[] m_DeleteKeyCodes;
+    internal InputManager m_InputManager;
 
     // Start is called before the first frame update
     void Start()
@@ -65,53 +62,20 @@ internal class GuessWordController : MonoBehaviour
         PrintGridInfo();
         SetUpDictionary();
         SetUpMessageBox();
-        SetUpKeyCodeLists();
+        SetUpInputManager();
         StartNewGame();
+    }
+
+    void SetUpInputManager()
+    {
+        m_InputManager = new InputManager();
     }
 
     void Update()
     {
-        ParseKeyboardInput();
-    }
-
-    internal void SetUpKeyCodeLists()
-    {
-        m_LetterKeyCodes = new KeyCode[]
+        if (m_InputManager.ParseKeyboardInput())
         {
-            KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E,
-            KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
-            KeyCode.K, KeyCode.L, KeyCode.M, KeyCode.N, KeyCode.O,
-            KeyCode.P, KeyCode.Q, KeyCode.R, KeyCode.S, KeyCode.T,
-            KeyCode.U, KeyCode.V, KeyCode.W, KeyCode.X, KeyCode.Y, KeyCode.Z
-        };
-        m_EnterKeyCodes = new KeyCode[] {KeyCode.Return, KeyCode.KeypadEnter};
-        m_DeleteKeyCodes = new KeyCode[] {KeyCode.Delete, KeyCode.Backspace};
-    }
-
-    internal void ParseKeyboardInput()
-    {
-        foreach (KeyCode keyCode in m_LetterKeyCodes)
-        {
-            if (Input.GetKeyDown(keyCode))
-            {
-                m_KeyboardInput += keyCode.ToString();
-            }
-        }
-
-        foreach (KeyCode keyCode in m_DeleteKeyCodes)
-        {
-            if (Input.GetKeyDown(keyCode))
-            {
-                m_KeyboardInput = m_KeyboardInput.Substring(0, m_KeyboardInput.Length - 1);
-            }
-        }
-
-        foreach (KeyCode keyCode in m_EnterKeyCodes)
-        {
-            if (Input.GetKeyDown(keyCode))
-            {
-                MakeGuess();
-            }
+            MakeGuess(m_InputManager.m_KeyboardInput);
         }
     }
 
@@ -128,25 +92,21 @@ internal class GuessWordController : MonoBehaviour
 
     internal void ClearKeyboardInput()
     {
-        m_KeyboardInput = "";
-        // clear the text field
-        // m_InputField.text = "";
-        // Focus
-        // m_InputField.ActivateInputField();
+        m_InputManager.ClearKeyboardInput();
     }
 
-    internal void MakeGuess()
+    internal void MakeGuess(string word)
     {
-        m_KeyboardInput = m_KeyboardInput.ToUpper();
-        if (!IsValid(m_KeyboardInput))
+        word = word.ToUpper();
+        if (!IsValid(word))
         {
-            Debug.Log($"Word {m_KeyboardInput} is not valid; please try again.");
+            Debug.Log($"Word {word} is not valid; please try again.");
             ClearKeyboardInput();
             return;
         }
 
         // submit the guess
-        m_Won = GuessWordGameObject.GuessWord(m_KeyboardInput);
+        m_Won = GuessWordGameObject.GuessWord(word);
         ClearKeyboardInput();
 
 
