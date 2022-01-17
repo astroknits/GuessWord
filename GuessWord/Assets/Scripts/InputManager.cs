@@ -2,6 +2,8 @@
 
 using UnityEngine;
 
+internal delegate void GuessWordDelegate(string word);
+
 internal class InputManager
 {
     internal string m_KeyboardInput;
@@ -34,7 +36,7 @@ internal class InputManager
         m_DeleteKeyCodes = new KeyCode[] {KeyCode.Delete, KeyCode.Backspace};
     }
 
-    internal bool ParseKeyboardInput()
+    internal void ParseKeyboardInput(GuessWordDelegate callback)
     {
         foreach (KeyCode keyCode in m_LetterKeyCodes)
         {
@@ -59,11 +61,8 @@ internal class InputManager
         {
             if (Input.GetKeyDown(keyCode))
             {
-                // callback()
-                return true;
+                callback(m_KeyboardInput);
             }
         }
-
-        return false;
     }
 }

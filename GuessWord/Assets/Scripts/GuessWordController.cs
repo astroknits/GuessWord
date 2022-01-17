@@ -9,7 +9,6 @@ using UnityEditor;
 using UnityEngine.Accessibility;
 using UnityEngine.UI;
 
-
 internal class GuessWordController : MonoBehaviour
 {
     [Header("Game Objects")] // Assign in inspector
@@ -73,10 +72,7 @@ internal class GuessWordController : MonoBehaviour
 
     void Update()
     {
-        if (m_InputManager.ParseKeyboardInput())
-        {
-            MakeGuess(m_InputManager.m_KeyboardInput);
-        }
+        m_InputManager.ParseKeyboardInput(MakeGuess);
     }
 
     internal void SetUpDictionary()
