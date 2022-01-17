@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 
@@ -29,8 +31,6 @@ internal class GuessWordController : MonoBehaviour
     [SerializeField]
     internal Button m_Button;
 
-    internal TMP_InputField m_InputField;
-
     [Header("Game Dimensions")] [SerializeField] [Range(4, 8)]
     internal int m_WordSize = 5; // number of letters per word
 
@@ -49,6 +49,7 @@ internal class GuessWordController : MonoBehaviour
 
     internal GuessWordGame GuessWordGameObject;
 
+    internal string m_KeyboardInput;
     internal bool m_Won;
 
     internal MessageBox m_MessageBox;
@@ -60,13 +61,33 @@ internal class GuessWordController : MonoBehaviour
         PrintGridInfo();
         SetUpDictionary();
         SetUpMessageBox();
-        SetUpInputField();
         StartNewGame();
     }
 
     void Update()
     {
+        ParseKeyboardInput();
+    }
 
+    private void ParseKeyboardInput()
+    {
+        foreach (char letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        {
+            KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), letter.ToString());
+            if (Input.GetKeyDown(keyCode))
+            {
+                m_KeyboardInput += letter.ToString().ToUpper();
+            }
+        }
+
+        KeyCode[] enterKeys = new KeyCode[] {KeyCode.Return, KeyCode.KeypadEnter};
+        foreach (KeyCode keyCode in enterKeys)
+        {
+            if (Input.GetKeyDown(keyCode))
+            {
+                MakeGuess();
+            }
+        }
     }
 
     internal void SetUpDictionary()
@@ -75,51 +96,33 @@ internal class GuessWordController : MonoBehaviour
     }
     internal void StartNewGame()
     {
-        ActivateInputField();
         GuessWordGameObject = new GuessWordGame(m_LetterBoxPrefab, m_KeyPrefab,  m_GameGridQuad, m_KeyboardQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
         GuessWordGameObject.Run();
-        ClearAndFocusInputField();
+        ClearKeyboardInput();
     }
 
-    internal void SetUpInputField()
+    internal void ClearKeyboardInput()
     {
-        m_InputField = GameObject.Find("InputGuessTextField").GetComponent<TMP_InputField>();
-        // m_InputField.transform.position -= new Vector3(250.0f, 700.0f); // for higher res
-        // m_InputField.transform.localScale *= 3.5f; // for higher res
-    }
-
-    internal void ActivateInputField()
-    {
-        m_InputField.onEndEdit.AddListener(MakeGuess);
-        m_InputField.gameObject.SetActive(true);
-    }
-
-    internal void ClearAndFocusInputField()
-    {
+        m_KeyboardInput = "";
         // clear the text field
-        m_InputField.text = "";
+        // m_InputField.text = "";
         // Focus
-        m_InputField.ActivateInputField();
+        // m_InputField.ActivateInputField();
     }
 
-    internal void DeactivateInputField()
+    internal void MakeGuess()
     {
-        m_InputField.onEndEdit.RemoveAllListeners();
-        m_InputField.gameObject.SetActive(false);
-    }
-    internal void MakeGuess(string word)
-    {
-        word = word.ToUpper();
-        if (!IsValid(word))
+        m_KeyboardInput = m_KeyboardInput.ToUpper();
+        if (!IsValid(m_KeyboardInput))
         {
-            Debug.Log($"Word {word} is not valid; please try again.");
-            ClearAndFocusInputField();
+            Debug.Log($"Word {m_KeyboardInput} is not valid; please try again.");
+            ClearKeyboardInput();
             return;
         }
 
         // submit the guess
-        m_Won = GuessWordGameObject.GuessWord(word);
-        ClearAndFocusInputField();
+        m_Won = GuessWordGameObject.GuessWord(m_KeyboardInput);
+        ClearKeyboardInput();
 
 
         if (m_Won)
@@ -167,14 +170,12 @@ internal class GuessWordController : MonoBehaviour
 
     internal void OnWin()
     {
-        DeactivateInputField();
         string message = $"Congratulations!\n\n The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
     internal void OnLose()
     {
-        DeactivateInputField();
         string message = $"Game over!  The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
