@@ -78,6 +78,7 @@ internal class GuessWordController : MonoBehaviour
         ActivateInputField();
         GuessWordGameObject = new GuessWordGame(m_LetterBoxPrefab, m_KeyPrefab,  m_GameGridQuad, m_KeyboardQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
         GuessWordGameObject.Run();
+        ClearAndFocusInputField();
     }
 
     internal void SetUpInputField()
@@ -93,6 +94,14 @@ internal class GuessWordController : MonoBehaviour
         m_InputField.gameObject.SetActive(true);
     }
 
+    internal void ClearAndFocusInputField()
+    {
+        // clear the text field
+        m_InputField.text = "";
+        // Focus
+        m_InputField.ActivateInputField();
+    }
+
     internal void DeactivateInputField()
     {
         m_InputField.onEndEdit.RemoveAllListeners();
@@ -104,14 +113,14 @@ internal class GuessWordController : MonoBehaviour
         if (!IsValid(word))
         {
             Debug.Log($"Word {word} is not valid; please try again.");
+            ClearAndFocusInputField();
             return;
         }
 
         // submit the guess
         m_Won = GuessWordGameObject.GuessWord(word);
+        ClearAndFocusInputField();
 
-        // clear the text field
-        m_InputField.text = "";
 
         if (m_Won)
         {
@@ -158,15 +167,15 @@ internal class GuessWordController : MonoBehaviour
 
     internal void OnWin()
     {
-        string message = $"Congratulations!\n\n The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         DeactivateInputField();
+        string message = $"Congratulations!\n\n The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
     internal void OnLose()
     {
-        string message = $"Game over!  The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         DeactivateInputField();
+        string message = $"Game over!  The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
