@@ -55,12 +55,17 @@ internal class GuessWordController : MonoBehaviour
     internal MessageBox m_MessageBox;
     internal ReferenceWordDictionary m_Dictionary;
 
+    internal KeyCode[] m_LetterKeyCodes;
+    internal KeyCode[] m_EnterKeyCodes;
+    internal KeyCode[] m_DeleteKeyCodes;
+
     // Start is called before the first frame update
     void Start()
     {
         PrintGridInfo();
         SetUpDictionary();
         SetUpMessageBox();
+        SetUpKeyCodeLists();
         StartNewGame();
     }
 
@@ -69,19 +74,39 @@ internal class GuessWordController : MonoBehaviour
         ParseKeyboardInput();
     }
 
-    private void ParseKeyboardInput()
+    internal void SetUpKeyCodeLists()
     {
-        foreach (char letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        m_LetterKeyCodes = new KeyCode[]
         {
-            KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), letter.ToString());
+            KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E,
+            KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
+            KeyCode.K, KeyCode.L, KeyCode.M, KeyCode.N, KeyCode.O,
+            KeyCode.P, KeyCode.Q, KeyCode.R, KeyCode.S, KeyCode.T,
+            KeyCode.U, KeyCode.V, KeyCode.W, KeyCode.X, KeyCode.Y, KeyCode.Z
+        };
+        m_EnterKeyCodes = new KeyCode[] {KeyCode.Return, KeyCode.KeypadEnter};
+        m_DeleteKeyCodes = new KeyCode[] {KeyCode.Delete, KeyCode.Backspace};
+    }
+
+    internal void ParseKeyboardInput()
+    {
+        foreach (KeyCode keyCode in m_LetterKeyCodes)
+        {
             if (Input.GetKeyDown(keyCode))
             {
-                m_KeyboardInput += letter.ToString().ToUpper();
+                m_KeyboardInput += keyCode.ToString();
             }
         }
 
-        KeyCode[] enterKeys = new KeyCode[] {KeyCode.Return, KeyCode.KeypadEnter};
-        foreach (KeyCode keyCode in enterKeys)
+        foreach (KeyCode keyCode in m_DeleteKeyCodes)
+        {
+            if (Input.GetKeyDown(keyCode))
+            {
+                m_KeyboardInput = m_KeyboardInput.Substring(0, m_KeyboardInput.Length - 1);
+            }
+        }
+
+        foreach (KeyCode keyCode in m_EnterKeyCodes)
         {
             if (Input.GetKeyDown(keyCode))
             {
