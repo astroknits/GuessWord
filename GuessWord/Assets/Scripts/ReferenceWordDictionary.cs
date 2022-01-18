@@ -35,7 +35,6 @@ internal class ReferenceWordDictionary : Object
 
     internal bool Contains(string word)
     {
-        Debug.Log($"word being tested is {word}");
         bool match = (m_Dictionary.Contains(word) || m_CommonWords.Contains(word));
         return match;
     }
