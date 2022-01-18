@@ -46,7 +46,7 @@ internal class GuessWordController : MonoBehaviour
     [Range(0.0f, 1.5f)]
     internal float m_CellPadding = 0; // padding between grid cells
 
-    internal GuessWordGame GuessWordGameObject;
+    internal GuessWordGame m_GuessWordGameObject;
 
     internal bool m_Won;
 
@@ -70,9 +70,14 @@ internal class GuessWordController : MonoBehaviour
         m_InputManager = new InputManager();
     }
 
+    internal void DrawCurrentText(string word)
+    {
+        m_GuessWordGameObject.DrawCurrentText(word);
+    }
+
     void Update()
     {
-        m_InputManager.ParseKeyboardInput(MakeGuess);
+        m_InputManager.ParseKeyboardInput(MakeGuess, DrawCurrentText);
     }
 
     internal void SetUpDictionary()
@@ -81,19 +86,20 @@ internal class GuessWordController : MonoBehaviour
     }
     internal void StartNewGame()
     {
-        GuessWordGameObject = new GuessWordGame(m_LetterBoxPrefab, m_KeyPrefab,  m_GameGridQuad, m_KeyboardQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
-        GuessWordGameObject.Run();
+        m_GuessWordGameObject = new GuessWordGame(m_LetterBoxPrefab, m_KeyPrefab,  m_GameGridQuad, m_KeyboardQuad, m_CanvasObject, m_WordSize, m_NumTries, m_GridMargin, m_CellPadding);
+        m_GuessWordGameObject.Run();
         ClearKeyboardInput();
     }
 
     internal void ClearKeyboardInput()
     {
         m_InputManager.ClearKeyboardInput();
+        m_GuessWordGameObject.ClearCurrentGuess();
     }
 
     internal void MakeGuess(string word)
     {
-        word = word.ToUpper();
+        word = word.Substring(0, m_WordSize).ToUpper();
         if (!IsValid(word))
         {
             Debug.Log($"Word {word} is not valid; please try again.");
@@ -102,7 +108,7 @@ internal class GuessWordController : MonoBehaviour
         }
 
         // submit the guess
-        m_Won = GuessWordGameObject.GuessWord(word);
+        m_Won = m_GuessWordGameObject.GuessWord(word);
         ClearKeyboardInput();
 
 
@@ -112,7 +118,7 @@ internal class GuessWordController : MonoBehaviour
             return;
         }
 
-        if (GuessWordGameObject.m_GuessCount >= m_NumTries)
+        if (m_GuessWordGameObject.m_GuessCount >= m_NumTries)
         {
             OnLose();
             return;
@@ -140,7 +146,7 @@ internal class GuessWordController : MonoBehaviour
     internal void CleanUpOldGame()
     {
         m_MessageBox.Destroy();
-        GuessWordGameObject.Destroy();
+        m_GuessWordGameObject.Destroy();
     }
 
     internal void Exit()
@@ -151,13 +157,13 @@ internal class GuessWordController : MonoBehaviour
 
     internal void OnWin()
     {
-        string message = $"Congratulations!\n\n The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
+        string message = $"Congratulations!\n\n The solution was {m_GuessWordGameObject.m_WordGridObject.m_Solution}";
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
 
     internal void OnLose()
     {
-        string message = $"Game over!  The solution was {GuessWordGameObject.m_WordGridObject.m_Solution}";
+        string message = $"Game over!  The solution was {m_GuessWordGameObject.m_WordGridObject.m_Solution}";
         ShowMessageBox(message + "\n\nPlay again?\n");
     }
 

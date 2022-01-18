@@ -33,8 +33,32 @@ internal class Word
     {
         SetWord(word);
         SetLetterColors();
+        // DrawText(word);
         Debug.Log($"Word {word} is a match? {Match}");
         return Match;
+    }
+
+    internal void DrawCurrentText(string word)
+    {
+        for (var i = 0; i < Solution.Length; i++)
+        {
+            if (i >= word.Length)
+            {
+                Value[i].DrawCurrentValue(' ');
+            }
+            else
+            {
+                Value[i].DrawCurrentValue(word[i]);
+            }
+        }
+    }
+
+    internal void ClearCurrentText()
+    {
+        for (var i = 0; i < Solution.Length; i++)
+        {
+            Value[i].DrawCurrentValue(' ');
+        }
     }
 
     internal void SetWord(string word)
@@ -42,7 +66,7 @@ internal class Word
         Match = true;
         for (int i = 0; i < word.Length; i++)
         {
-            if (!Value[i].GuessLetter(word[i], i, GuessNumber))
+            if (!Value[i].GuessLetter(word[i]))
             {
                 Match = false;
             }

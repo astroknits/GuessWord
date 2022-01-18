@@ -13,10 +13,18 @@ internal class WordGridCell: LetterCell
         Solution = solution;
     }
 
-    internal bool GuessLetter(char letter, int i, int j)
+    internal bool GuessLetter(char letter)
     {
-        SetValue(letter, i, j);
+        SetValue(letter);
+        m_LetterText.text = Value.ToString();
         Match = Value == Solution;
         return Match;
+    }
+
+    internal void DrawCurrentValue(char letter)
+    {
+        Value = letter;
+        SetBoxColor(Color.white);
+        m_LetterText.text = Value.ToString();
     }
 }

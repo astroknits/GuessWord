@@ -54,7 +54,7 @@ internal class KeyboardObject : BaseLetterGrid
                 // Now apply the settings for the letter and render the key
                 m_Keyboard.Add(letter, new KeyboardCell(letter, m_LetterBoxParent));
                 m_Keyboard[letter].ConfigureCell(centre, cellSize, m_LetterBox);
-                m_Keyboard[letter].RenderLetter(letter.ToString(), 3);
+                m_Keyboard[letter].SetUpText(letter.ToString(), 3);
             }
         }
     }

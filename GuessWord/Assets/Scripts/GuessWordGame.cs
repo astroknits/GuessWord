@@ -104,4 +104,20 @@ internal class GuessWordGame : Object
         m_GuessCount += 1;
         return match;
     }
+
+    internal void DrawCurrentText(string currentText)
+    {
+        var word = m_WordGridObject.m_WordGrid[m_GuessCount];
+        word.DrawCurrentText(currentText);
+    }
+
+    internal void ClearCurrentGuess()
+    {
+        if (m_GuessCount >= m_NumTries)
+        {
+            return;
+        }
+        var word = m_WordGridObject.m_WordGrid[m_GuessCount];
+        word.ClearCurrentText();
+    }
 }

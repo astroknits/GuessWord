@@ -36,13 +36,14 @@ internal class InputManager
         m_DeleteKeyCodes = new KeyCode[] {KeyCode.Delete, KeyCode.Backspace};
     }
 
-    internal void ParseKeyboardInput(GuessWordDelegate callback)
+    internal void ParseKeyboardInput(GuessWordDelegate onEnter, GuessWordDelegate onEntryChanged)
     {
         foreach (KeyCode keyCode in m_LetterKeyCodes)
         {
             if (Input.GetKeyDown(keyCode))
             {
                 m_KeyboardInput += keyCode.ToString();
+                onEntryChanged(m_KeyboardInput);
             }
         }
 
@@ -53,6 +54,7 @@ internal class InputManager
                 if (m_KeyboardInput.Length > 0)
                 {
                     m_KeyboardInput = m_KeyboardInput.Substring(0, m_KeyboardInput.Length - 1);
+                    onEntryChanged(m_KeyboardInput);
                 }
             }
         }
@@ -61,7 +63,7 @@ internal class InputManager
         {
             if (Input.GetKeyDown(keyCode))
             {
-                callback(m_KeyboardInput);
+                onEnter(m_KeyboardInput);
             }
         }
     }

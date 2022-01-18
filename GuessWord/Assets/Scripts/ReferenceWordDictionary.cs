@@ -29,14 +29,15 @@ internal class ReferenceWordDictionary : Object
         var stream = new StreamReader(commonWordList);
         while (!stream.EndOfStream)
         {
-            m_CommonWords.Add(stream.ReadLine());
+            m_CommonWords.Add(stream.ReadLine().ToLower());
         }
     }
 
     internal bool Contains(string word)
     {
         Debug.Log($"word being tested is {word}");
-        return m_Dictionary.Contains(word);
+        bool match = (m_Dictionary.Contains(word) || m_CommonWords.Contains(word));
+        return match;
     }
 
     internal string GetRandomWord(int wordLength)

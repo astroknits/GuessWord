@@ -11,11 +11,13 @@ internal class LetterCell: Object
     internal Color CellColor;
     internal GameObject Cube;
     internal GameObject LetterCellParent;
+    internal TextMeshPro m_LetterText;
     // internal float zOffset = 0.2f;
 
     internal LetterCell(GameObject letterCellParent)
     {
         LetterCellParent = letterCellParent;
+        Value = ' ';
     }
 
     internal void ConfigureCell(Vector3 centre, float cellSize, GameObject prefab)
@@ -31,12 +33,6 @@ internal class LetterCell: Object
     {
         Value = letter;
     }
-    internal void SetValue(char letter, int i, int j)
-    {
-        Value = letter;
-        string label = $"Guess {j} Letter {i}: {Value.ToString()}";
-        RenderLetter(label);
-    }
 
     internal void SetBoxColor(Color color)
     {
@@ -44,9 +40,8 @@ internal class LetterCell: Object
         Cube.GetComponent<Renderer>().material.color = color;
     }
 
-    internal void RenderLetter(string label, int fontSize=5)
+    internal void SetUpText(string label, int fontSize=5)
     {
-        // int i, int j
         GameObject text = new GameObject(label);
         text.transform.parent = LetterCellParent.transform;
         AddTextMesh(text, fontSize);
@@ -56,10 +51,10 @@ internal class LetterCell: Object
 
     internal void AddTextMesh(GameObject text, int fontSize)
     {
-        TextMeshPro t = text.AddComponent<TextMeshPro>();
-        t.text = Value.ToString();
-        t.color = Color.black;
-        t.fontSize = fontSize;
-        t.alignment = TextAlignmentOptions.Center;
+        m_LetterText = text.AddComponent<TextMeshPro>();
+        m_LetterText.text = Value.ToString();
+        m_LetterText.color = Color.black;
+        m_LetterText.fontSize = fontSize;
+        m_LetterText.alignment = TextAlignmentOptions.Center;
     }
 }

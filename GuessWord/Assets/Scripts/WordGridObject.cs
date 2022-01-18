@@ -48,6 +48,7 @@ internal class WordGridObject : BaseLetterGrid
                 float cellCentreX = upperLeftCorner.x + m_GridMargin + cellSize / 2.0f + i * (m_CellPadding + cellSize);
                 Vector3 cellCentre = new Vector3(cellCentreX, cellCentreY, upperLeftCorner.z - m_ZOffset);
                 m_WordGrid[guessNumber].Value[i].ConfigureCell(cellCentre, cellSize, m_LetterBox);
+                m_WordGrid[guessNumber].Value[i].SetUpText($"LetterBox {i} {guessNumber}");
             }
         }
     }
